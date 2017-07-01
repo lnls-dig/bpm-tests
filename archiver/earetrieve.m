@@ -26,7 +26,7 @@ end
 
 npvs = length(pvnames);
 
-if nargin < 6 || isempty(timezone)
+if nargin < 5 || isempty(timezone)
     timezone = 0;
 end
 

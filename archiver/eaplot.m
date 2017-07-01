@@ -68,11 +68,11 @@ end
 
 % Determine edge timestamps
 minmax_date = zeros(npvs, 2);
-minmax_date(:,1) = Inf;
-minmax_date(:,2) = -Inf;
 for i=1:npvs
-    if length(time_datenum_current_timezone{i}) > 1 
-        minmax_date(i,:) = time_datenum_current_timezone{i}([1 end]);
+    if length(time_datenum_current_timezone{i}) > 1
+        minmax_date(i,:) = time_datenum_current_timezone{i}([2 end]);
+    else
+        minmax_date(i,:) = [Inf -Inf];
     end
 end
 

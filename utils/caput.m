@@ -1,4 +1,4 @@
-function [status, notfound] = caput(pvnames, values)
+function status = caput(pvnames, values)
 %CAPUT   EPICS CA put.
 %   EPICS CA put using PV names as input argument.
 %   Every call of CAPUT opens and closes the connection to the PVs. For
@@ -16,7 +16,6 @@ function [status, notfound] = caput(pvnames, values)
 %       status:     Same meaning as in mcaput function, i.e., status = 1 in
 %                   case of success and status = 0 otherwise. Additionaly,
 %                   PVs which could not be open result in a failure status.
-%       notfound:   Indexes of PVs which could not be open.
 %
 %   See also CAPUTH, CAGET, MCAPUT.
 
@@ -26,5 +25,5 @@ function [status, notfound] = caput(pvnames, values)
 %   Author (Jun-2017): Daniel Tavares (LNLS/DIG) - daniel.tavares@lnls.br
 
 handles = mcaopen(pvnames);
-[status, notfound] = caputh(handles, values);
+status = caputh(handles, values);
 mcaclose(handles(handles ~= 0));

@@ -1,4 +1,4 @@
-function [wvfdata, notfound] = cagetwvf(pvnames)
+function wvfdata = cagetwvf(pvnames)
 %CAGETWVF   EPICS CA get for waveforms.
 %   EPICS CA get using waveform PV names as input arguments. Only waveforms
 %   of same lengths and non-zero length will be returned. The NORD record
@@ -19,7 +19,6 @@ function [wvfdata, notfound] = cagetwvf(pvnames)
 %                   waveform PVs (not found, not connected or zero-length
 %                   waveform) an array of NaN values is returned in the
 %                   corresponding matrix column.
-%       notfound:   Indexes of PVs which could not be open.
 %
 %   See also CAGET, MCAGET.
 

@@ -1,4 +1,4 @@
-function [wvfdata, notfound] = cagetwvfh(handles, checkstate)
+function wvfdata = cagetwvfh(handles, checkstate)
 %CAGETWVFH   EPICS CA get for waveforms using handles.
 %   EPICS CA get using waveform MCA handles as input argument. Only
 %   waveforms of same lengths and non-zero length will be returned.
@@ -20,7 +20,6 @@ function [wvfdata, notfound] = cagetwvfh(handles, checkstate)
 %                   waveform PVs (not found, not connected or zero-length
 %                   waveform) an array of NaN values is returned in the
 %                   corresponding matrix column.
-%       notfound:   Indexes of PVs which could not be open.
 %
 %   See also CAOPENWVF, CACLOSEWVF, CAGET, MCAGET.
 

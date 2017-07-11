@@ -1,4 +1,4 @@
-function [values, notfound] = cageth(handles, checkstate)
+function values = cageth(handles, checkstate)
 %CAGETH   EPICS CA get using handles.
 %   EPICS CA get using MCA handles as input argument.
 %   To generate valid handles, use mcaopen. CAGETH outperforms the caget
@@ -17,7 +17,6 @@ function [values, notfound] = cageth(handles, checkstate)
 %   OUTPUTS:
 %       values:     1D array of PV values. For PVs which could not be
 %                   open, a NaN value is returned.
-%       notfound:   Indexes of PVs which could not be open.
 %
 %   See also CAGET, CAPUT, MCAGET, MCAOPEN, MCACLOSE.
 
@@ -33,7 +32,6 @@ end
 npvs = length(handles);
 
 valid = handles ~= 0;
-notfound = find(handles == 0);
 
 handles = handles(valid);
 

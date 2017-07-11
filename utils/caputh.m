@@ -1,4 +1,4 @@
-function [status, notfound] = caputh(handles, values, checkstate)
+function status = caputh(handles, values, checkstate)
 %CAPUTH   EPICS CA put using handles.
 %   EPICS CA put using MCA handles as input argument.
 %   To generate valid handles, use mcaopen. CAPUTH outperforms the caput
@@ -20,7 +20,6 @@ function [status, notfound] = caputh(handles, values, checkstate)
 %       status:     Same meaning as in mcaput function, i.e., status = 1 in
 %                   case of success and status = 0 otherwise. Additionaly,
 %                   PVs which could not be open result in a failure status.
-%       notfound:   Indexes of PVs which could not be open.
 %
 %   See also CAPUTH, CAGET, MCAPUT, MCAOPEN, MCACLOSE.
 
@@ -40,7 +39,6 @@ if length(values) == 1
 end
 
 valid = handles ~= 0;
-notfound = find(handles == 0);
 
 values = values(valid);
 handles = handles(valid);

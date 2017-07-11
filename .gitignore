@@ -1,6 +1,10 @@
+# General
+*.log
+
 # Matlab
 *.asv
 *.m~
+*.mat
 
 # Octave
 octave-workspace

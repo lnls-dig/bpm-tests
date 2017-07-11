@@ -62,14 +62,18 @@ if ~isempty(handles.nord)
         
         npts = npts(1);
         
-        handles_valid = handles.val(valid);
+        indexes_handles_valid = find(valid);
         
-        nwvf = length(handles_valid);
-        wvfdata = nan(npts,nwvf);
-        for i=1:nwvf
-            if mcastate(handles_valid(i))
-                rawdata = mcaget(handles_valid(i));
-                wvfdata(:,i) = rawdata(1:npts);
+        wvfdata = nan(npts, npvs);
+        for i=1:npvs
+            handle = handles.val(i);
+            if valid(i) && (mcastate(handle) == 1)
+                try
+                    rawdata = mcaget(handle);
+                    wvfdata(:,i) = rawdata(1:npts);
+                catch
+                    valid(i) = false;
+                end
             else
                 valid(i) = false;
             end

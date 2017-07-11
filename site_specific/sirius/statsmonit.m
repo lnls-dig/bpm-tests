@@ -17,6 +17,9 @@ datadir = fullfile('site_specific', 'sirius', 'data');
 
 % SCRIPT
 
+% Disable MCA warnings to avoid messing up log file
+warning('off');
+
 % Set path and other initializations
 basepath = pwd;
 if ~strcmpi(basepath(end-8:end), 'bpm-tests')
@@ -31,8 +34,8 @@ bpmparavalues = [acqch npts 0 1 0 0];
 bpmwaveformnames = {'GEN_AArrayData', 'GEN_BArrayData', 'GEN_CArrayData', 'GEN_DArrayData', 'GEN_XArrayData', 'GEN_YArrayData', 'GEN_QArrayData', 'GEN_SUMArrayData'};
 acqtriggername = 'ACQTriggerEvent';
 
-% File descriptor for writing to file (fid = fopen()) and to screen (fid = 1)
-fidlog = [fopen(logfilename, 'w+') 1];
+% File descriptor for writing log to screen (fid = 1)
+fidlog = 1;
 
 try
     while true
@@ -153,5 +156,9 @@ try
         end
     end
 catch err
-    fclose(fidlog);
+    for i=1:length(fidlog)
+        if all(fidlog(i) ~= [1 2]) % Do not close standard output or error output
+            fclose(fidlog(i));
+        end
+    end
 end

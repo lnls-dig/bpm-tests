@@ -6,6 +6,11 @@
 %       [TELNET PORT] = 3000
 %       [OCTAVE EXECUTABLE DIRECTORY] = /usr/bin/
 
+%   Copyright (C) 2017 CNPEM
+%   Licensed under GNU Lesser General Public License v3.0 (LGPL)
+%
+%   Author (Jul-2017): Daniel Tavares (LNLS/DIG) - daniel.tavares@lnls.br
+
 % SCRIPT PARAMETERS
 mean_length = 20;
 acqch = 3; % [0] adc - [1] adcswap - [2] tbt - [3] fofb

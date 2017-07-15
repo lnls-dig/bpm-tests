@@ -166,4 +166,5 @@ catch err
             fclose(fidlog(i));
         end
     end
+    rethrow(err);
 end

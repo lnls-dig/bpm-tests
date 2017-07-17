@@ -1,4 +1,4 @@
-function [data, time_utc] = earetrieve(address, pvnames, start_date, duration, timezone)
+function [data, time_utc] = earetrieve(address, pvnames, start_date, duration, timezone, operator)
 %EARETRIEVE   Retrieve PV data from EPICS Archiver Appliance.
 %
 %   [data, time_utc] = earetrieve(address, pvnames, start_date, duration, timezone)
@@ -9,6 +9,7 @@ function [data, time_utc] = earetrieve(address, pvnames, start_date, duration, t
 %       start_date:     Timestamp of starting date in the format year-month-day hours:minutes:seconds (ex.: '2017-06-08 23:00:00')
 %       duration:       Time length of data expressed in hours
 %       timezone:       Local time offset to UTC (ex.: -3 (Brasilia Time- BRT)) - (default value = 0)
+%       operator:       Operator used to process data prior to retriveal (default value = '') - see more at https://slacmshankar.github.io/epicsarchiver_docs/userguide.html
 %
 %   Outputs:
 %       data:           1D cell array of arrays of PV values
@@ -30,6 +31,10 @@ if nargin < 5 || isempty(timezone)
     timezone = 0;
 end
 
+if nargin < 6 || isempty(operator)
+    operator = '';
+end
+
 % Convert 'start_date' to Matlab datenum
 start_date_datenum = datenum(start_date) - timezone/24;
 
@@ -41,10 +46,17 @@ utc_offset = datenum('01-jan-1970 00:00:00');
 data = cell(npvs,1);
 time_utc = cell(npvs,1);
 
+if ~isempty(operator)
+    operator = [operator '('];
+    opclose = ')';
+else
+    opclose = '';
+end
+
 for i=1:npvs
     try
         urlwrite(sprintf('%s/retrieval/data/getData.mat', address), 'temp.mat', 'get', ...
-            {'pv', pvnames{i}, 'from', start_date_str, 'to', end_date_str});
+            {'pv', [operator pvnames{i} opclose], 'from', start_date_str, 'to', end_date_str});
         wrkspc = load('temp.mat');
         
         data{i} =  wrkspc.data.values;

@@ -16,7 +16,7 @@ mean_length = 20;
 acqch = 3; % [0] adc - [1] adcswap - [2] tbt - [3] fofb
 npts = 100000;
 period = 5;
-logfilename = fullfile('site_specific', 'sirius', 'statsmonit.log');
+logfilename = fullfile('site_specific', 'sirius', 'logs', 'statsmonit.log');
 mcapaths = '/usr/local/epics/extensions/lib/linux-x86_64:/usr/local/epics/extensions/src/mca/matlab';
 datadir = fullfile('site_specific', 'sirius', 'data');
 
@@ -44,7 +44,7 @@ fidlog = 1;
 
 try
     while true
-        bpms_filename = fullfile('site_specific', 'sirius', 'bpmnames');
+        bpms_filename = fullfile('site_specific', 'sirius', 'config', 'bpm', 'names.cfg');
         logtext(fidlog, 'trace', sprintf('Loading BPM names from file ''%s''...', bpms_filename));
         
         bpmnames = readstrlines(bpms_filename);
@@ -83,7 +83,7 @@ try
             logtext(fidlog, 'trace', ['Acquisition parameters to be set to all active BPMs: ' paramtext]);
             
             % Load monitoring parameters
-            monitstatus_filename = fullfile('site_specific', 'sirius', 'monitored_stats');
+            monitstatus_filename = fullfile('site_specific', 'sirius', 'config', 'statsmonit', 'monitored.cfg');
             textfromfile = readstrlines(monitstatus_filename, '%s %f');
             monitstatsnames = textfromfile{1}';
             monitstatspct = repmat(textfromfile{2}'/100, 1, nbpms);

@@ -11,10 +11,10 @@ dirinfo = dir;
 % Ignore paths starting with a dot. For example, '.', '..', '.git'
 for i=1:length(dirinfo)
     if dirinfo(i).isdir && dirinfo(i).name(1) ~= '.'
-        addpath(genpath(dirinfo(i).name));
+        addpath(genpath(fullfile(pwd, dirinfo(i).name)));
     end
 end
 
-mcatimeout('open', 0.5);
-mcatimeout('get', 0.1);
-mcatimeout('put', 0.1);
+mcatimeout('open', 1);
+mcatimeout('get', 0.5);
+mcatimeout('put', 0.5);

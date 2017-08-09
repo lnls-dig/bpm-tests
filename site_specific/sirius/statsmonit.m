@@ -19,6 +19,7 @@ period = 5;
 logfilename = fullfile('site_specific', 'sirius', 'logs', 'statsmonit.log');
 mcapaths = '/usr/local/epics/extensions/lib/linux-x86_64:/usr/local/epics/extensions/src/mca/matlab';
 datadir = fullfile('site_specific', 'sirius', 'data');
+normal_save_time = 1;
 
 % SCRIPT
 
@@ -42,6 +43,7 @@ acqtriggername = 'ACQTriggerEvent';
 % File descriptor for writing log to screen (fid = 1)
 fidlog = 1;
 
+last_normal_save_time = now;
 try
     while true
         bpms_filename = fullfile('site_specific', 'sirius', 'config', 'bpm', 'names.cfg');
@@ -131,13 +133,19 @@ try
                     monitcondition_greater = monitvalues./monitstatsrefvalue > 1+monitstatspct;
                     monitcondition_lesser = monitvalues./monitstatsrefvalue < 1-monitstatspct;
                     
+                    current_time = now;
+                    
                     if any(monitcondition_greater) || any(monitcondition_lesser)
                         % In case one of the monitored conditions has been triggered, save waveforms
                         logcondition(fidlog, monitcondition_greater, pv_monitstats, '>', monitstatspct_txt);
                         logcondition(fidlog, monitcondition_lesser, pv_monitstats, '<', monitstatspct_txt);
                         
                         wvf = cagetwvfh(handles_waveforms, 1);
-                        save(fullfile(datadir, sprintf('%s_waveforms.mat', datestr(now, 30))), 'wvf', 'monitvalues', 'monitstatsrefvalue', 'monitstatspct', 'pv_monitstats', 'pv_monitstats', '-mat');
+                        save(fullfile(datadir, sprintf('condition_%s_waveforms.mat', datestr(current_time, 30))), 'wvf', 'monitvalues', 'monitstatsrefvalue', 'monitstatspct', 'pv_monitstats', 'pv_monitstats', '-mat');
+                    elseif current_time - last_normal_save_time > normal_save_time/24
+                        wvf = cagetwvfh(handles_waveforms, 1);
+                        save(fullfile(datadir, sprintf('normal_%s_waveforms.mat', datestr(current_time, 30))), 'wvf', '-mat');                    
+                        last_normal_save_time = current_time;
                     else
                         % Only aquisitions which have not triggered saving of waveforms contributes to mean of monitored parameters
                         monitvalues_table(mod(iter,mean_length)+1,:) = monitvalues;

@@ -15,6 +15,6 @@ for i=1:length(dirinfo)
     end
 end
 
-mcatimeout('open', 1);
-mcatimeout('get', 0.5);
-mcatimeout('put', 0.5);
+mcatimeout('open', 2);
+mcatimeout('get', 2);
+mcatimeout('put', 2);

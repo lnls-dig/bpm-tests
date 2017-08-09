@@ -28,5 +28,5 @@ function wvfdata = cagetwvf(pvnames)
 %   Author (Jun-2017): Daniel Tavares (LNLS/DIG) - daniel.tavares@lnls.br
 
 handles = caopenwvf(pvnames);
-[wvfdata, notfound] = cagetwvfh(handles, false);
+wvfdata = cagetwvfh(handles, false);
 caclosewvf(handles);

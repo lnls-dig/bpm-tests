@@ -34,7 +34,6 @@ wvfdata = [];
 
 % Filter out null handles
 valid = handles.nord ~= 0;
-notfound = find(handles.nord == 0);
 handles.nord = handles.nord(valid);
 
 nelem = nan(1,npvs);

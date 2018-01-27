@@ -28,6 +28,10 @@ function wvfdata = cagetwvfh(handles, checkstate)
 %
 %   Author (Jun-2017): Daniel Tavares (LNLS/DIG) - daniel.tavares@lnls.br
 
+if nargin < 2 || isempty(checkstate)
+    checkstate = 1;
+end
+
 npvs = length(handles.val);
 
 wvfdata = [];

@@ -46,7 +46,7 @@ pvprefixes = pvprefixes(:)';
 pvsuffixes = pvsuffixes(:)';
 
 separator = repmat({separator}, 1, nprop);
-pvnames = cell(1,nprop);
+pvnames = cell(1,ndev*nprop); 
 for i=1:ndev
     pvnames((i-1)*nprop + (1:nprop)) = cellfun(@horzcat, repmat(pvprefixes(i), 1, nprop), separator, pvsuffixes, 'UniformOutput', 0);
 end

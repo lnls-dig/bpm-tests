@@ -80,8 +80,8 @@ min_date = min(minmax_date(:,1));
 max_date = max(minmax_date(:,2));
 
 % Use hour discretization for edge timestamps
-start_time_datenum_rounded = floor(min_date*24)/24;
-end_time_datenum_rounded = ceil(max_date*24)/24;
+start_time_datenum_rounded = floor(min_date*24*hour_discret)/24/hour_discret;
+end_time_datenum_rounded = ceil(max_date*24*hour_discret)/24/hour_discret;
 
 % Build graph ticks and tick labels
 ticks = start_time_datenum_rounded:hour_discret/24:end_time_datenum_rounded;

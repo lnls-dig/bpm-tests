@@ -1,19 +1,20 @@
-#!/usr/bin/octave-cli -qf
+#!/usr/bin/octave -q
 arg_list = argv();
 %arg_list = {'14'};
 
 datestr_start = datestr(now, 'yyyy-mm-dd_HH-MM-SS');
+
+cd(fileparts(mfilename('fullpath')));
+cd('../../..');
 
 bpm_config_path = 'site_specific/sirius/config';
 test_results_path = 'test_results';
 mkdir(test_results_path);
 
 if length(arg_list) < 1
-    fprintf('Must specify crate number.');
+    fprintf('Must specify crate number.\n');
 else
     warning off;
-    addpath /usr/local/epics/extensions/src/mca/matlab
-    addpath /usr/local/epics/extensions/lib/linux-x86_64
     initbpmtests;
 
     test_name = 'test_no_signal';

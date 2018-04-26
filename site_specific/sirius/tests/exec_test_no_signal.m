@@ -17,7 +17,6 @@ bpms = allbpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo'));
 pbpms = allbpms(strcmp(bpmtypes, 'pbpm'));
 
 config_files_bpm = { ...
-    fullfile(bpm_config_path, 'bpm', 'allbpms', 'monit.cfg')
     fullfile(bpm_config_path, 'bpm', 'rfbpms', 'backend_reset.cfg')
     fullfile(bpm_config_path, 'bpm', 'rfbpms', 'backend_basic.cfg')
     fullfile(bpm_config_path, 'bpm', 'rfbpms', 'sr', 'sirius-sr-button_bpm.cfg')

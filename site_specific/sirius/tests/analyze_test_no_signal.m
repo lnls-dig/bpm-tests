@@ -38,21 +38,21 @@ if ~isempty(data)
     if isempty(r.cond.freezed) && isempty(r.cond.std) && isempty(r.cond.mean) && isempty(r.cond.min) && isempty(r.cond.max)
         logtext(fid, 'info', 'Test results analyzed. All good!');
     else
-        logtext(fid, 'warning', 'Test results analyzed. Some waveforms violates specified limits.');
+        logtext(fid, 'error', 'Test results analyzed. Some waveforms violates specified limits.');
         for i=1:length(r.cond.freezed)
             logtext(fid, 'error', sprintf('All-zero values on waveform %s', r.cond.freezed{i}));
         end
         for i=1:length(r.cond.std)
-            logtext(fid, 'warning', sprintf('Violated standard deviation: %s', r.cond.std{i}));
+            logtext(fid, 'error', sprintf('Violated standard deviation: %s', r.cond.std{i}));
         end
         for i=1:length(r.cond.mean)
-            logtext(fid, 'warning', sprintf('Violated mean value: %s', r.cond.mean{i}));
+            logtext(fid, 'error', sprintf('Violated mean value: %s', r.cond.mean{i}));
         end
         for i=1:length(r.cond.min)
-            logtext(fid, 'warning', sprintf('Violated distance between minimum and mean value: %s', r.cond.min{i}));
+            logtext(fid, 'error', sprintf('Violated distance between minimum and mean value: %s', r.cond.min{i}));
         end
         for i=1:length(r.cond.max)
-            logtext(fid, 'warning', sprintf('Violated distance between maximum and mean value: %s', r.cond.max{i}));
+            logtext(fid, 'error', sprintf('Violated distance between maximum and mean value: %s', r.cond.max{i}));
         end
     end
 end

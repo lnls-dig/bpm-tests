@@ -33,7 +33,7 @@ for i=1:length(bpms)
     logtext(fid, 'info', sprintf('Active BPM: %s', bpms{i}));
 end
 for i=1:length(bpms_inactive)
-    logtext(fid, 'warning', sprintf('Inactive BPM: %s', bpms_inactive{i}));
+    logtext(fid, 'error', sprintf('Inactive BPM: %s', bpms_inactive{i}));
 end
 
 logtext(fid, 'trace', 'Applying photon BPM basic configurations and checking active units...');
@@ -42,7 +42,7 @@ for i=1:length(pbpms)
     logtext(fid, 'info', sprintf('Active photon BPM: %s', pbpms{i}));
 end
 for i=1:length(pbpms_inactive)
-    logtext(fid, 'warning', sprintf('Inactive photon BPM: %s', pbpms_inactive{i}));
+    logtext(fid, 'error', sprintf('Inactive photon BPM: %s', pbpms_inactive{i}));
 end
 
 pause(5);
@@ -53,11 +53,11 @@ if ~isempty(bpms)
     [bpms_locked, bpms_notlocked, bpms_inactive2] = bpm_islocked(bpms);
     bpms_inactive = [bpms_inactive bpms_inactive2];
     if isempty(bpms_notlocked)
-        logtext(fid, 'trace', sprintf('All active BPMs are locked to the reference clock.'));
+        logtext(fid, 'info', sprintf('All active BPMs are locked to the reference clock.'));
     else
-        logtext(fid, 'warning', sprintf('Some BPMs are not locked to the reference clock...'));
+        logtext(fid, 'error', sprintf('Some BPMs are not locked to the reference clock...'));
         for i=1:length(bpms_notlocked)
-            logtext(fid, 'warning', sprintf('Not locked BPM: %s', bpms_notlocked{i}));
+            logtext(fid, 'error', sprintf('Not locked BPM: %s', bpms_notlocked{i}));
         end
     end
 end

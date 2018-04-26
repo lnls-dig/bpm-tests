@@ -4,7 +4,8 @@ arg_list = argv();
 
 datestr_start = datestr(now, 'yyyy-mm-dd_HH-MM-SS');
 
-cd(fileparts(mfilename('fullpath')));
+[script_path, test_name] = fileparts(mfilename('fullpath'));
+cd(script_path);
 cd('../../..');
 
 bpm_config_path = 'site_specific/sirius/config';
@@ -17,7 +18,6 @@ else
     warning off;
     initbpmtests;
 
-    test_name = 'test_no_signal';
     log_filename = fullfile(test_results_path, sprintf('%s_%s.log', datestr_start, test_name));
     workspace_filename = fullfile(test_results_path, sprintf('%s_%s.mat', datestr_start, test_name));
 

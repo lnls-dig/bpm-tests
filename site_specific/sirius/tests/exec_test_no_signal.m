@@ -70,8 +70,13 @@ wvf_names = { ...
     'GEN_DArrayData', ...
     };
 
+logtext(fid, 'trace', 'Acquiring waveforms at ADC data rate...');
 r.testdata.adc = bpm_acquire([pbpms; bpms], wvf_names, 0, 100000, 3, 2);
+
+logtext(fid, 'trace', 'Acquiring waveforms at TBT data rate...');
 r.testdata.tbt = bpm_acquire([pbpms; bpms], wvf_names, 2, 100000, 3, 2);
+
+logtext(fid, 'trace', 'Acquiring waveforms at FOFB data rate...');
 r.testdata.fofb = bpm_acquire([pbpms; bpms], wvf_names, 3, 100000, 3, 2);
 
 r.status.bpm.active = bpms;

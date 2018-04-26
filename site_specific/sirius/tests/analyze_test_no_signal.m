@@ -26,15 +26,19 @@ if ~isempty(data)
     
     mean_ = mean(data);
     
+    r.cond.freezed = names(sum(data) == 0);
     r.cond.std = names(std(data) > std_cmp);
     r.cond.mean = names((mean_ > abs(mean_cmp)) | (mean_ < -abs(mean_cmp)));
     r.cond.min = names(abs(min(data)-mean_) > min_cmp);
     r.cond.max = names(abs(max(data)-mean_) > max_cmp);
     
-    if isempty(r.cond.std) && isempty(r.cond.mean) && isempty(r.cond.min) && isempty(r.cond.max)
+    if isempty(r.cond.freezed) && isempty(r.cond.std) && isempty(r.cond.mean) && isempty(r.cond.min) && isempty(r.cond.max)
         logtext(fid, 'info', 'Test results analyzed. All good!');
     else
         logtext(fid, 'warning', 'Test results analyzed. Some waveforms violates specified limits.');
+        for i=1:length(r.cond.freezed)
+            logtext(fid, 'error', sprintf('All-zero values on waveform %s', r.cond.freezed{i}));
+        end
         for i=1:length(r.cond.std)
             logtext(fid, 'warning', sprintf('Violated standard deviation: %s', r.cond.std{i}));
         end

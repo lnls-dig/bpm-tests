@@ -60,6 +60,9 @@ if ~isempty(bpms)
             logtext(fid, 'error', sprintf('Not locked BPM: %s', bpms_notlocked{i}));
         end
     end
+else
+    bpms_locked = [];
+    bpms_notlocked = [];
 end
 
 % Acquire data at different data rates

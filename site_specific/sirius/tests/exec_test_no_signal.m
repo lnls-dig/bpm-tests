@@ -1,4 +1,4 @@
-function r = exec_test_no_signal(bpm_config_path, crate_number, log_filename)
+function r = exec_test_no_signal(config_path, crate_number, log_filename)
 
 if nargin < 3 || isempty(log_filename)
     fid_logfile = [];
@@ -8,7 +8,7 @@ end
 
 fid = [1 fid_logfile];
 
-filetext = readstrlines(fullfile(bpm_config_path, 'bpm', sprintf('names_crate%02d.cfg', crate_number)), '%s %s');
+filetext = readstrlines(fullfile(config_path, 'bpm', sprintf('names_crate%02d.cfg', crate_number)), '%s %s');
 
 allbpms = filetext{1};
 bpmtypes = filetext{2};
@@ -17,13 +17,13 @@ bpms = allbpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo'));
 pbpms = allbpms(strcmp(bpmtypes, 'pbpm'));
 
 config_files_bpm = { ...
-    fullfile(bpm_config_path, 'bpm', 'rfbpms', 'backend_reset.cfg')
-    fullfile(bpm_config_path, 'bpm', 'rfbpms', 'backend_basic.cfg')
-    fullfile(bpm_config_path, 'bpm', 'rfbpms', 'sr', 'sirius-sr-button_bpm.cfg')
+    fullfile(config_path, 'bpm', 'rfbpms', 'backend_reset.cfg')
+    fullfile(config_path, 'bpm', 'rfbpms', 'backend_basic.cfg')
+    fullfile(config_path, 'bpm', 'rfbpms', 'sr', 'sirius-sr-button_bpm.cfg')
     };
 
 config_files_pbpm = { ...
-    fullfile(bpm_config_path, 'bpm', 'pbpms', 'sirius-frontend-pbpm.cfg')
+    fullfile(config_path, 'bpm', 'pbpms', 'sirius-frontend-pbpm.cfg')
     };
 
 % Apply configuration and check which BPMs are alive

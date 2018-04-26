@@ -49,10 +49,10 @@ end
 pause(5);
 
 % Check lock to reference clock of RF BPMs
-logtext(fid, 'trace', 'Checking if BPM clocks are locked to the reference clock sent through the crate backplane...');
-[bpms_locked, bpms_notlocked, bpms_inactive2] = bpm_islocked(bpms);
-bpms_inactive = [bpms_inactive bpms_inactive2];
 if ~isempty(bpms)
+    logtext(fid, 'trace', 'Checking if BPM clocks are locked to the reference clock sent through the crate backplane...');
+    [bpms_locked, bpms_notlocked, bpms_inactive2] = bpm_islocked(bpms);
+    bpms_inactive = [bpms_inactive bpms_inactive2];
     if isempty(bpms_notlocked)
         logtext(fid, 'trace', sprintf('All active BPMs are locked to the reference clock.'));
     else

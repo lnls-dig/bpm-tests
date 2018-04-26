@@ -1,7 +1,7 @@
 function [areas, devices, pvnames, bpm_type_by_crate] = sirius_bpm_slot_mapping
 
 nsectors = 20;
-ncrates = 21;
+ncrates = 22;
 nbpmslots = 24;
 
 % Straight sections names
@@ -183,6 +183,10 @@ end
 % Crate number 21 (LINAC and Trasnfer Lines BPMs)
 bpmslots_occupancy_by_crate{crate_number}(11:24,:) = linac_tl_bpm_names;
 bpm_type_by_crate(crate_number, :) = bpm_type;
+crate_number = crate_number+1;
+
+% Crate number 22 (Spares)
+bpmslots_occupancy_by_crate{crate_number} = cell(nbpmslots, 4);
 
 % Fill names of unused slots
 for crate_number = 1:ncrates

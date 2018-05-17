@@ -13,7 +13,7 @@ filetext = readstrlines(fullfile(config_path, 'bpm', sprintf('names_crate%02d.cf
 allbpms = filetext{1};
 bpmtypes = filetext{2};
 
-bpms = allbpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo'));
+bpms = allbpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo') | strcmp(bpmtypes, 'rfbpm-sp'));
 pbpms = allbpms(strcmp(bpmtypes, 'pbpm'));
 
 config_files_bpm = { ...

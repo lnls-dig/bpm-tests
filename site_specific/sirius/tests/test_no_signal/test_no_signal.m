@@ -6,7 +6,7 @@ datestr_start = datestr(now, 'yyyy-mm-dd_HH-MM-SS');
 
 [script_path, test_name] = fileparts(mfilename('fullpath'));
 cd(script_path);
-cd('../../..');
+cd('../../../..');
 
 config_path = 'site_specific/sirius/config';
 

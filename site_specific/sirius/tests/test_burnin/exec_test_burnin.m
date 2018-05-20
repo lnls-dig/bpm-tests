@@ -152,3 +152,7 @@ mcaclose(h);
 raw_results.monit_amp = Y;
 raw_results.t = X*period_s;
 raw_results.pv_names = pv_names;
+raw.bpms_locked = bpms_locked;
+raw.bpms_notlocked = bpms_notlocked;
+raw.bpms_switching = bpms_switching;
+raw.bpms_notswitching = bpms_notswitching;

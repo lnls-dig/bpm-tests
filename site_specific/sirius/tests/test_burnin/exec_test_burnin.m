@@ -43,8 +43,24 @@ else
     bpms_notlocked = [];
 end
 
-
-
+% Check switching
+if ~isempty(bpms)
+    logtext(fid, 'trace', 'Checking if switching works properly...');
+    caput(buildpvnames(bpms, 'SwMode-Sel'), 3);
+    pause(0.1);
+    [bpms_switching, bpms_notswitching] = bpm_checksw(bpms, swharm_threshold);
+    if isempty(bpms_notswitching)
+        logtext(fid, 'info', sprintf('All active BPMs are switching properly.'));
+    else
+        logtext(fid, 'error', sprintf('Some BPMs are not switching properly...'));
+        for i=1:length(bpms_notswitching)
+            logtext(fid, 'error', sprintf('Not switching: %s', bpms_notswitching{i}));
+        end
+    end
+else
+    bpms_switching = [];
+    bpms_notswitching = [];
+end
 
 pv_names = buildpvnames(bpms_locked, {'AmplA-Mon', 'AmplC-Mon', 'AmplB-Mon', 'AmplD-Mon'});
 

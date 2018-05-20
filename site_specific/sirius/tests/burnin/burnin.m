@@ -1,4 +1,4 @@
-function burnin(config_path, crate_number, log_filename, goal, pct_goal, max_nsamples)
+function burnin(config_path, crate_number, log_filename)
 
 if nargin < 3 || isempty(log_filename)
     fid_logfile = [];
@@ -8,16 +8,22 @@ end
 
 fid = [1 fid_logfile];
 
-%goal = 3e7;
-%pct_goal = 0.2;
-%max_nsamples = 600;
+% Load test parameters
+config_filename = fullfile(config_path, 'burnin', 'burnin.cfg');
+test_config = readstrlines(config_filename, '%s %s');
+for i=1:size(test_config{1},1)
+    eval([test_config{1}{i} '=' test_config{2}{i} ';']);
+end
+
+monit_amp_var_tol = monit_amp_var_tol_pct/100;
+period_s = period_ms/1000;
 
 filetext = readstrlines(fullfile(config_path, 'bpm', sprintf('names_crate%02d.cfg', crate_number)), '%s %s');
 
 allbpms = filetext{1};
 bpmtypes = filetext{2};
 
-bpms = allbpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo') | strcmp(bpmtypes, 'rfbpm-sp'));
+bpms = allbpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo') | strcmp(bpmtypes, 'rfbpm-sp'))
 
 % Check lock to reference clock of RF BPMs
 fid = 1;
@@ -63,18 +69,18 @@ ylabel('Variation [dB]');
 lHandle{nvars+1} = line(nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
 lHandle{nvars+2} = line(nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
 
-yref_inf = 20*log10(1-pct_goal);
-yref_sup = 20*log10(1+pct_goal);
+yref_inf = 20*log10(1-monit_amp_var_tol);
+yref_sup = 20*log10(1+monit_amp_var_tol);
 
-X = 1:max_nsamples;
-Y = nan(max_nsamples, nvars);
+X = 1:graph_nsamples;
+Y = nan(graph_nsamples, nvars);
 
 ovflw = false;
 i = 1;
 while true
     try
         newdata = cageth(h);
-        pct = newdata/goal;
+        pct = newdata/monit_amp_goal;
         Y(i,:) = 20*log10(pct);
         
         X(i) = i;
@@ -85,7 +91,7 @@ while true
             fprintf('%19s (#%2d)  |', bpms_locked{j}, j);
             for k=1:4
                 val = pct(1, (j-1)*4 + k);
-                if abs(1-val) > pct_goal
+                if abs(1-val) > monit_amp_var_tol
                     pattern = ['    ', char(27), '[37;41;1m%9.2f%%', char(27), '[0m'];
                 else
                     pattern = '    %9.2f%%';
@@ -101,7 +107,7 @@ while true
                 set(lHandle{j}, 'XData', X, 'YData', Y([i+1:end 1:i],j));
             end
             
-            xs = [0 max_nsamples+1];
+            xs = [0 graph_nsamples+1];
         else
             for j=1:nvars
                 set(lHandle{j}, 'XData', X(1:i), 'YData', Y(1:i,j));
@@ -113,11 +119,11 @@ while true
         set(lHandle{nvars+1}, 'XData', xs, 'YData', [yref_sup yref_sup]);
         set(lHandle{nvars+2}, 'XData', xs, 'YData', [yref_inf yref_inf]);
         
-        pause(0.1);
+        pause(period_s);
         
-        i = mod(i, max_nsamples)+1;
+        i = mod(i, graph_nsamples)+1;
         
-        if ~ovflw && i == max_nsamples
+        if ~ovflw && i == graph_nsamples
             ovflw = true;
         end
     catch

@@ -1,4 +1,4 @@
-function burnin(config_path, crate_number, log_filename)
+function raw_results = exec_test_burnin(config_path, crate_number, log_filename)
 
 if nargin < 3 || isempty(log_filename)
     fid_logfile = [];
@@ -132,3 +132,7 @@ while true
 end
 
 mcaclose(h);
+
+raw_results.monit_amp = Y;
+raw_results.t = X*period_s;
+raw_results.pv_names = pv_names;

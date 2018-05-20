@@ -18,7 +18,8 @@ nperiods = floor(1e5/nsw);
 npts = nperiods*nsw;
 
 idx_carrier = nif*sw_adc_factor*nperiods+1;
-idx_swharm = (nif*sw_adc_factor+1)*nperiods+1;
+idx_swharm_p1 = (nif*sw_adc_factor+1)*nperiods+1;
+idx_swharm_m1 = (nif*sw_adc_factor-1)*nperiods+1;
 
 wvf_names = {'AmplA-Mon', 'AmplC-Mon', 'AmplB-Mon', 'AmplD-Mon'};
 
@@ -26,7 +27,7 @@ r = bpm_acquire(bpm_names, wvf_names, 0, npts);
 
 fft_wvfs = abs(fft(r.wvfs));
 
-switching = fft_wvfs(:, idx_swharm)./fft_wvfs(:, idx_carrier) > threshold;
+switching = (fft_wvfs(:, idx_swharm_p1)./fft_wvfs(:, idx_carrier) > threshold) & (fft_wvfs(:, idx_swharm_m1)./fft_wvfs(:, idx_carrier) > threshold);
 
 nwvfs = size(r.wvfs,2);
 

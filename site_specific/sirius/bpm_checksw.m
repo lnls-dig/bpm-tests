@@ -28,6 +28,10 @@ fft_wvfs = abs(fft(r.wvfs));
 
 switching = fft_wvfs(:, idx_swharm)./fft_wvfs(:, idx_carrier) > threshold;
 
+nwvfs = size(r.wvfs,2);
+
+switching = all(reshape(switching, 4, nwvfs/4));
+
 bpms_switching = bpm_names(switching);
 bpms_notswitching = bpm_names(~switching);
 bpms_inactive = []; % TODO: return inactive BPMs

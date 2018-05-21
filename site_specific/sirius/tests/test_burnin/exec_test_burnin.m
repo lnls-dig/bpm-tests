@@ -23,7 +23,13 @@ filetext = readstrlines(fullfile(config_path, 'bpm', sprintf('names_crate%02d.cf
 allbpms = filetext{1};
 bpmtypes = filetext{2};
 
-bpms = allbpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo') | strcmp(bpmtypes, 'rfbpm-sp'))
+bpms = allbpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo') | strcmp(bpmtypes, 'rfbpm-sp'));
+
+% Apply configuration and check which BPMs are alive
+logtext(fid, 'trace', 'Applying BPM configurations and checking active units...');
+r = configbpm(config_path, crate_number, log_filename);
+bpms = r.bpms;
+
 
 % Check lock to reference clock of RF BPMs
 fid = 1;
@@ -98,9 +104,9 @@ while true
         newdata = cageth(h);
         pct = newdata/monit_amp_goal;
         Y(i,:) = 20*log10(pct);
-        
+
         X(i) = i;
-        
+
         fprintf('                                  TO/ch1/o      BI/ch2/*      TI/ch3/+      BO/ch4/x  \n', j);
         fprintf('--------------------------------------------------------------------------------------\n', j);
         for j=1:nvars/4
@@ -117,28 +123,28 @@ while true
             fprintf('\n');
         end
         fprintf('\n');
-        
+
         if ovflw
             for j=1:nvars
                 set(lHandle{j}, 'XData', X, 'YData', Y([i+1:end 1:i],j));
             end
-            
+
             xs = [0 graph_nsamples+1];
         else
             for j=1:nvars
                 set(lHandle{j}, 'XData', X(1:i), 'YData', Y(1:i,j));
             end
-            
+
             xs = [0 i+1];
         end
-        
+
         set(lHandle{nvars+1}, 'XData', xs, 'YData', [yref_sup yref_sup]);
         set(lHandle{nvars+2}, 'XData', xs, 'YData', [yref_inf yref_inf]);
-        
+
         pause(period_s);
-        
+
         i = mod(i, graph_nsamples)+1;
-        
+
         if ~ovflw && i == graph_nsamples
             ovflw = true;
         end

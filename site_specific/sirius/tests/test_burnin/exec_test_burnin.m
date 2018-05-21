@@ -37,11 +37,11 @@ if ~isempty(bpms)
     logtext(fid, 'trace', 'Checking if BPM clocks are locked to the reference clock sent through the crate backplane...');
     [bpms_locked, bpms_notlocked, bpms_inactive] = bpm_islocked(bpms);
     if isempty(bpms_notlocked)
-        logtext(fid, 'info', sprintf('All active BPMs are locked to the reference clock.'));
+        logtext(fid, 'info', sprintf('All active BPMs are locked to the reference clock.'), true);
     else
-        logtext(fid, 'error', sprintf('Some BPMs are not locked to the reference clock...'));
+        logtext(fid, 'error', sprintf('Some BPMs are not locked to the reference clock...'), true);
         for i=1:length(bpms_notlocked)
-            logtext(fid, 'error', sprintf('Not locked BPM: %s', bpms_notlocked{i}));
+            logtext(fid, 'error', sprintf('Not locked BPM: %s', bpms_notlocked{i}), true);
         end
     end
 else

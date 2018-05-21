@@ -31,7 +31,6 @@ else
     log_filename = fullfile(test_results_path, sprintf('%s_%s.log', datestr_start, test_name));
     workspace_filename = fullfile(test_results_path, sprintf('%s_%s.mat', datestr_start, test_name));
 
-    raw_results = exec_test_no_signal(config_path, crate_number, log_filename);
     raw_results = exec_test_burnin(config_path, crate_number, log_filename);
     save(workspace_filename, 'raw_results');
 end

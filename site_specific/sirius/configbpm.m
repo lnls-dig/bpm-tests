@@ -28,7 +28,7 @@ config_files_allbpms = { ...
     %'triggers.cfg', ...
     };
 
-logtext(fid, 'trace', 'Applying basic configurations and checking active units...');
+logtext(fid, 'trace', 'Applying basic AFC configurations and checking active units...');
 allbpms = caputbpmconfig(allbpms, config_files_allbpms, fid, colorized);
 
 % Find BPM types
@@ -63,22 +63,22 @@ config_files_pbpm = { ...
     fullfile(config_path, 'bpm', 'pbpms', 'sirius-frontend-pbpm.cfg')
     };
 
-logtext(fid, 'trace', 'Applying basic BPM configurations and checking active units...');
+logtext(fid, 'trace', 'Applying AFC configurations for RF BPMs...');
 bpms = caputbpmconfig(bpms, config_files_rfbpm, fid, colorized);
 
-logtext(fid, 'trace', 'Applying RFFE configurations and checking active units...');
+logtext(fid, 'trace', 'Applying RFFE configurations...');
 bpms = caputbpmconfig(bpms, config_files_rfbpm_rffe, fid, colorized);
 
-logtext(fid, 'trace', 'Applying Storage Ring BPM configurations and checking active units...');
+logtext(fid, 'trace', 'Applying Storage Ring BPM configurations...');
 bpms_sr = caputbpmconfig(bpms_sr, config_files_rfbpm_sr, fid, colorized);
 
-logtext(fid, 'trace', 'Applying Booster BPM configurations and checking active units...');
+logtext(fid, 'trace', 'Applying Booster BPM configurations...');
 bpms_boo = caputbpmconfig(bpms_boo, config_files_rfbpm_boo, fid, colorized);
 
-logtext(fid, 'trace', 'Applying Single Pass BPM configurations and checking active units...');
+logtext(fid, 'trace', 'Applying Single Pass BPM configurations...');
 bpms_sp = caputbpmconfig(bpms_sp, config_files_rfbpm_sp, fid, colorized);
 
-logtext(fid, 'trace', 'Applying Photon BPM configurations and checking active units...');
+logtext(fid, 'trace', 'Applying Photon BPM configurations...');
 pbpms = caputbpmconfig(pbpms, config_files_pbpm, fid, colorized);
 
 r.allbpms = allbpms;

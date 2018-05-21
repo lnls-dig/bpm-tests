@@ -52,14 +52,11 @@ end
 
 for i=1:length(fid)
     if colorized && fid(i) == 1
-        if levelnum > 2
+        if levelnum == 3
+            pre = [char(27), '[33m'];
+            post = [char(27), '[0m'];
+        elseif levelnum >= 3
             pre = [char(27), '[31m'];
-            post = [char(27), '[0m'];
-        elseif levelnum > 3
-            pre = [char(27), '[33m'];
-            post = [char(27), '[0m'];
-        elseif levelnum > 4
-            pre = [char(27), '[33m'];
             post = [char(27), '[0m'];
         else
             pre = '';

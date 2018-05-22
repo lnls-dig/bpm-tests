@@ -109,13 +109,13 @@ if ~isempty(bpms_locked)
     set(ax2, 'Visible', 'off');
     
     xlabel(ax1, 'samples');
-    ylabel(ax1, 'Variation [dB]');
+    ylabel(ax1, 'Variation [%]');
 
     line_handles{nvars+1} = line(ax1, nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
     line_handles{nvars+2} = line(ax1, nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
     
-    yref_inf = 20*log10(1-monit_amp_var_tol);
-    yref_sup = 20*log10(1+monit_amp_var_tol);
+    yref_inf = (1-monit_amp_var_tol)*100;
+    yref_sup = (1+monit_amp_var_tol)*100;
     
     X = 1:graph_nsamples;
     Y = nan(graph_nsamples, nvars);
@@ -125,8 +125,8 @@ if ~isempty(bpms_locked)
     while true
         try
             newdata = cageth(h);
-            pct = newdata/monit_amp_goal;
-            Y(i,:) = 20*log10(pct);
+            pct = newdata/monit_amp_goal*100;
+            Y(i,:) = pct;
             
             X(i) = i;
             
@@ -141,7 +141,7 @@ if ~isempty(bpms_locked)
                     else
                         pattern = '    %9.2f%%';
                     end
-                    fprintf('%s', sprintf(pattern, val*100));
+                    fprintf('%s', sprintf(pattern, val));
                 end
                 fprintf('\n');
             end

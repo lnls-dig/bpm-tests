@@ -91,28 +91,28 @@ if ~isempty(bpms_locked)
     mrk = { 'o', '*', '+', 'x'};
     
     figure(1);
+    ax1 = axes('Position', [0.1 0.12 0.75 0.815]);
+    ax2 = axes('Position', [1 0.12 0 0.815]);
+    line(ax2, nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
+
     i = 1;
     for j=1:nvars/4
-        subplot(121);
         for k=1:4
-            lHandle{i} = line(nan, nan, 'Color', clr(j,:), 'LineWidth', 2, 'Marker', mrk{k});
+            line_handles{i} = line(ax1, nan, nan, 'Color', clr(j,:), 'LineWidth', 2, 'Marker', mrk{k});
             i = i+1;
         end
         
-        subplot(122);
-        lHandle{i} = line(nan, nan, 'Color', clr(j,:), 'LineWidth', 2);
+        line(ax2, nan, nan, 'Color', clr(j,:), 'LineWidth', 2);
     end
-    xlabel('samples');
-    ylabel('Variation [dB]');
     
-    subplot(122);
-    legend(bpms_locked);
-    ax = gca;
-    set(ax, 'Visible', 'off');
-    subplot(121);
+    legend(ax2, ['Reference'; bpms_locked(:)]);
+    set(ax2, 'Visible', 'off');
     
-    lHandle{nvars+1} = line(nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
-    lHandle{nvars+2} = line(nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
+    xlabel(ax1, 'samples');
+    ylabel(ax1, 'Variation [dB]');
+
+    line_handles{nvars+1} = line(ax1, nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
+    line_handles{nvars+2} = line(ax1, nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
     
     yref_inf = 20*log10(1-monit_amp_var_tol);
     yref_sup = 20*log10(1+monit_amp_var_tol);
@@ -149,20 +149,20 @@ if ~isempty(bpms_locked)
             
             if ovflw
                 for j=1:nvars
-                    set(lHandle{j}, 'XData', X, 'YData', Y([i+1:end 1:i],j));
+                    set(line_handles{j}, 'XData', X, 'YData', Y([i+1:end 1:i],j));
                 end
                 
                 xs = [0 graph_nsamples+1];
             else
                 for j=1:nvars
-                    set(lHandle{j}, 'XData', X(1:i), 'YData', Y(1:i,j));
+                    set(line_handles{j}, 'XData', X(1:i), 'YData', Y(1:i,j));
                 end
                 
                 xs = [0 i+1];
             end
             
-            set(lHandle{nvars+1}, 'XData', xs, 'YData', [yref_sup yref_sup]);
-            set(lHandle{nvars+2}, 'XData', xs, 'YData', [yref_inf yref_inf]);
+            set(line_handles{nvars+1}, 'XData', xs, 'YData', [yref_sup yref_sup]);
+            set(line_handles{nvars+2}, 'XData', xs, 'YData', [yref_inf yref_inf]);
             
             pause(period_s);
             

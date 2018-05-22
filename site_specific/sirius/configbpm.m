@@ -95,8 +95,8 @@ end
 function [active_units, inactive_units] = caputbpmconfig(bpmnames, config_files, file_id, colorized)
 
 [active_units, inactive_units] = bpm_applyconfig(bpmnames, config_files);
-for i=1:length(bpmnames)
-    logtext(file_id, 'info', sprintf('Active: %s', bpmnames{i}), colorized);
+for i=1:length(active_units)
+    logtext(file_id, 'info', sprintf('Active: %s', active_units{i}), colorized);
 end
 for i=1:length(inactive_units)
     logtext(file_id, 'error', sprintf('Inactive: %s', inactive_units{i}), colorized);

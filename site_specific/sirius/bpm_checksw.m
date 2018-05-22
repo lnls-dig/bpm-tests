@@ -2,6 +2,7 @@ function [bpms_switching, bpms_notswitching, bpms_inactive] = bpm_checksw(bpms, 
 
 sw_sts = caget(buildpvnames(bpms, 'SwMode-Sts'));
 caput(buildpvnames(bpms, 'SwMode-Sel'), 3);
+pause(0.5);
 
 h = caget(buildpvnames(bpms, 'INFOHarmonicNumber-RB'));
 nadc = caget(buildpvnames(bpms, 'INFOTBTRate-RB'));

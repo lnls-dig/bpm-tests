@@ -22,6 +22,13 @@ filetext = readstrlines(fullfile(config_path, 'bpm', sprintf('names_crate%02d.cf
 allbpms = filetext{1};
 bpmtypes = filetext{2};
 
+% Find BPM types
+pbpms = allbpms(strcmp(bpmtypes, 'pbpm'));
+bpms = allbpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo') | strcmp(bpmtypes, 'rfbpm-sp'));
+bpms_sr = allbpms(strcmp(bpmtypes, 'rfbpm-sr'));
+bpms_boo = allbpms(strcmp(bpmtypes, 'rfbpm-boo'));
+bpms_sp = allbpms(strcmp(bpmtypes, 'rfbpm-sp'));
+
 % Filter out inactive BPMs
 config_files_allbpms = { ...
     'monit.cfg', ...
@@ -30,13 +37,6 @@ config_files_allbpms = { ...
 
 logtext(fid, 'trace', 'Applying basic AFC configurations and checking active units...');
 allbpms = caputbpmconfig(allbpms, config_files_allbpms, fid, colorized);
-
-% Find BPM types
-pbpms = allbpms(strcmp(bpmtypes, 'pbpm'));
-bpms = allbpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo') | strcmp(bpmtypes, 'rfbpm-sp'));
-bpms_sr = allbpms(strcmp(bpmtypes, 'rfbpm-sr'));
-bpms_boo = allbpms(strcmp(bpmtypes, 'rfbpm-boo'));
-bpms_sp = allbpms(strcmp(bpmtypes, 'rfbpm-sp'));
 
 config_files_rfbpm = { ...
     %fullfile(config_path, 'bpm', 'rfbpms', 'backend_reset.cfg')

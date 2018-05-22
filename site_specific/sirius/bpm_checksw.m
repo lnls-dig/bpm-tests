@@ -1,8 +1,11 @@
-function [bpms_switching, bpms_notswitching, bpms_inactive] = bpm_checksw(bpm_names, threshold)
+function [bpms_switching, bpms_notswitching, bpms_inactive] = bpm_checksw(bpms, params)
 
-h = caget(buildpvnames(bpm_names, 'INFOHarmonicNumber-RB'));
-nadc = caget(buildpvnames(bpm_names, 'INFOTBTRate-RB'));
-nsw = 2*caget(buildpvnames(bpm_names, 'SwDivClk-RB'));
+sw_sts = caget(buildpvnames(bpms, 'SwMode-Sts'));
+caput(buildpvnames(bpms, 'SwMode-Sel'), 3);
+
+h = caget(buildpvnames(bpms, 'INFOHarmonicNumber-RB'));
+nadc = caget(buildpvnames(bpms, 'INFOTBTRate-RB'));
+nsw = 2*caget(buildpvnames(bpms, 'SwDivClk-RB'));
 
 sw_adc_factor = round(nsw./nadc);
 
@@ -20,12 +23,15 @@ idx_swharm_m1 = (nif.*sw_adc_factor-1).*nperiods+1;
     
 wvf_names = {'GEN_AArrayData', 'GEN_CArrayData', 'GEN_BArrayData', 'GEN_DArrayData'};
 
-for i=1:length(bpm_names)
-    r = bpm_acquire(bpm_names(i), wvf_names, 0, npts(i));
+switching = false(1,length(bpms));
+for i=1:length(bpms)
+    r = bpm_acquire(bpms(i), wvf_names, 0, npts(i));
     fft_wvfs = abs(fft(r.wvfs));
-    switching(i) = all((fft_wvfs(idx_swharm_p1(i), :)./fft_wvfs(idx_carrier(i), :) > threshold) & (fft_wvfs(idx_swharm_m1(i), :)./fft_wvfs(idx_carrier(i), :) > threshold));
+    switching(i) = all((fft_wvfs(idx_swharm_p1(i), :)./fft_wvfs(idx_carrier(i), :) > params.swharm_threshold) & (fft_wvfs(idx_swharm_m1(i), :)./fft_wvfs(idx_carrier(i), :) > params.swharm_threshold));
 end
 
-bpms_switching = bpm_names(switching);
-bpms_notswitching = bpm_names(~switching);
+caput(buildpvnames(bpms, 'SwMode-Sel'), sw_sts);
+
+bpms_switching = bpms(switching);
+bpms_notswitching = bpms(~switching);
 bpms_inactive = []; % TODO: return inactive BPMs

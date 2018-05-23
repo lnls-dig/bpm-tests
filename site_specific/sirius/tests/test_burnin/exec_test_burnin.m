@@ -33,7 +33,6 @@ r = configbpm(config_path, crate_number, log_filename);
 bpms = r.bpms;
 
 % Start BPM Reference Clock Test
-fid = 1;
 if ~isempty(bpms)
     logtext(fid, 'trace', 'Checking if BPM clocks are locked to the reference clock sent through the crate backplane...');
     [bpms_locked, bpms_notlocked, bpms_inactive] = bpm_islocked(bpms);
@@ -58,6 +57,14 @@ if ~isempty(bpms_locked)
     if isempty(bpms_ac_nok) && isempty(bpms_bd_nok)
         logtext(fid, 'info', sprintf('All locked BPMs had an amplitude step due to an attenuator value step.'),true);
     else
+        logtext(fid, 'info', sprintf('Some BPMs responded to an attenuator value step...'), true);
+        for i=1:length(bpms_ac_ok)
+            logtext(fid, 'info', sprintf('Channel pair TO-BI ok: %s', bpms_ac_ok{i}),true);
+        end
+        for i=1:length(bpms_bd_ok)
+            logtext(fid, 'info', sprintf('Channel pair TI-BO ok: %s', bpms_bd_ok{i}),true);
+        end
+
         logtext(fid, 'error', sprintf('Some BPMs did not respond to an attenuator value step...'), true);
         for i=1:length(bpms_ac_nok)
             logtext(fid, 'error', sprintf('No proper response on channel pair TO-BI: %s', bpms_ac_nok{i}),true);
@@ -81,9 +88,10 @@ if ~isempty(bpms_locked)
     end
 
     % Start Monitoring Amplitude test
-    fprintf('\n');
-    input('Ready to start Monitoring Amplitude Test. Press <ENTER> to continue...');
+    logtext(fid, 'trace', 'Starting Amplitude test...');
     [X,Y,pv_names] = bpm_checkamp(bpms, checkamp_param);
+
+    input('Done! Press <ENTER> to save data.');
 else
     logtext(fid, 'warning', 'Skipping switching and amplitude tests since there are no locked BPMs...', true);
     Y = [];
@@ -91,6 +99,10 @@ else
     pv_names = [];
     bpms_switching = [];
     bpms_notswitching = [];
+end
+
+if ~isempty(fid_logfile)
+    fclose(fid_logfile);
 end
 
 raw_results.bpms_locked = bpms_locked;

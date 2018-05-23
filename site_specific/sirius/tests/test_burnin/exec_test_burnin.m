@@ -15,10 +15,17 @@ for i=1:size(test_config{1},1)
 end
 
 checksw_param.swharm_threshold = swharm_threshold;
+
 checkamp_param.monit_amp_goal = monit_amp_goal;
 checkamp_param.monit_amp_var_tol_pct = monit_amp_var_tol_pct;
 checkamp_param.graph_nsamples = graph_nsamples;
 checkamp_param.period_ms = period_ms;
+
+checkatt_param.max_att = max_att;
+checkatt_param.delta_att = delta_att;
+checkatt_param.navg_monit_amp = navg_monit_amp;
+checkatt_param.period_ms = period_ms;
+checkatt_param.monit_amp_pv_names = monit_amp_pv_names;
 
 % Apply configuration and check which BPMs are alive
 logtext(fid, 'trace', 'Applying BPM and Photon BPM configurations and checking active units...');
@@ -44,6 +51,22 @@ else
 end
 
 if ~isempty(bpms_locked)
+    % Start BPM Attenuator Test
+    logtext(fid, 'trace', 'Checking BPM attenuators or cables or RFFE/AFC correspondence...');
+
+    [bpms_ac_ok, bpms_ac_nok, bpms_bd_ok, bpms_bd_nok, bpms_inactive] = bpm_checkatt(bpms_locked, checkatt_param);
+    if isempty(bpms_ac_nok) && isempty(bpms_bd_nok)
+        logtext(fid, 'info', sprintf('All locked BPMs had an amplitude step due to an attenuator value step.'),true);
+    else
+        logtext(fid, 'error', sprintf('Some BPMs did not respond to an attenuator value step...'), true);
+        for i=1:length(bpms_ac_nok)
+            logtext(fid, 'error', sprintf('No proper response on channel pair TO-BI: %s', bpms_ac_nok{i}),true);
+        end
+        for i=1:length(bpms_bd_nok)
+            logtext(fid, 'error', sprintf('No proper response on channel pair TI-BO: %s', bpms_bd_nok{i}),true);
+        end
+    end
+
     % Start BPM Switching Test
     logtext(fid, 'trace', 'Checking if switching works properly on locked BPMs...');
 

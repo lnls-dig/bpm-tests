@@ -53,30 +53,13 @@ Y = nan(params.graph_nsamples, nvars);
 
 ovflw = false;
 i = 1;
-while true
+for sample=1:params.graph_nsamples
      try
         newdata = cageth(h);
         pct = newdata/params.monit_amp_goal*100;
         Y(i,:) = pct;
 
         X(i) = i;
-
-        fprintf('                                  TO/ch1/o      BI/ch2/*      TI/ch3/+      BO/ch4/x  \n', j);
-        fprintf('--------------------------------------------------------------------------------------\n', j);
-        for j=1:nvars/4
-            fprintf('%19s (#%2d)  |', bpms{j}, j);
-            for k=1:4
-                val = pct(1, (j-1)*4 + k);
-                if abs(1-val) > params.monit_amp_var_tol_pct/100
-                    pattern = ['    ', char(27), '[37;41;1m%9.2f%%', char(27), '[0m'];
-                else
-                    pattern = '    %9.2f%%';
-                end
-                fprintf('%s', sprintf(pattern, val));
-            end
-            fprintf('\n');
-        end
-        fprintf('\n');
 
         if ovflw
             for j=1:nvars

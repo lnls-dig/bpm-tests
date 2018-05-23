@@ -1,6 +1,6 @@
-function r = configbpm(config_path, crate_number, log_filename)
+function r = bpm_config(config_path, crate_number, log_filename)
 %CONFIGBPM   Configure BPMs of a single crate.
-%   r = CONFIGBPM(config_path, crate_number, log_filename)
+%   r = BPM_CONFIG(config_path, crate_number, log_filename)
 
 %   Copyright (C) 2017 CNPEM
 %   Licensed under GNU Lesser General Public License v3.0 (LGPL)

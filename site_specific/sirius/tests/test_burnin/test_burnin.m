@@ -21,7 +21,7 @@ else
     test_results_path = arg_list{2};
 
     if exist(test_results_path, 'dir')
-        test_results_path = fullfile(test_results_path, sprintf('crate_%02d', crate_number));
+        test_results_path = fullfile(test_results_path, sprintf('crate%02d', crate_number));
         mkdir(test_results_path);
     else
         fprintf('The specified results folder does not exist.\n');

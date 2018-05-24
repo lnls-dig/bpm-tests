@@ -29,20 +29,48 @@ checkatt_param.monit_amp_pv_names = monit_amp_pv_names;
 
 % Apply configuration and check which BPMs are alive
 logtext(fid, 'trace', 'Applying BPM and Photon BPM configurations and checking active units...');
-[bpm_ok1, bpm_set] = bpm_config(config_path, crate_number);
-bpms = bpm_set{3}(bpm_ok1{3}); % only RF BPMs
+[bpm_ok_array, bpm_set] = bpm_config(config_path, crate_number);
+rfbpms = bpm_set{3};
+
+x = false(length(rfbpms),1);
+
+idx_rfbpm_afc_comm_ok = find(bpm_ok_array{3});
+idx_rfbpm_rffe_comm_ok = find(bpm_ok_array{4});
+
+bpm_ok1 = x;
+bpm_ok1(idx_rfbpm_afc_comm_ok) = true;
+
+bpm_okx = x;
+bpm_okx(idx_rfbpm_rffe_comm_ok) = true;
+
+bpms = rfbpms(idx_rfbpm_afc_comm_ok); % only RF BPMs with active AFCs
 
 if ~isempty(bpms)
     % Start quick amplitude test
-    bpm_ok2 = bpm_checkamp_quick(bpms, checkamp_param);
+    bpm_ok2_ = bpm_checkamp_quick(bpms, checkamp_param);
+    
+    idx_amp_ok = find(bpm_ok2_);
+    bpm_ok2 = x;
+    bpm_ok2(idx_rfbpm_afc_comm_ok(idx_amp_ok)) = true;
     
     % Start BPM Attenuator Test
     logtext(fid, 'trace', 'Checking BPM attenuators or cables or RFFE/AFC correspondence...');
-    [bpm_ok3, bpm_ok4] = bpm_checkatt(bpms, checkatt_param);
+    [bpm_ok3_, bpm_ok4_] = bpm_checkatt(bpms, checkatt_param);
     
+    idx_att_ac_ok = find(bpm_ok3_);
+    bpm_ok3 = x;
+    bpm_ok3(idx_rfbpm_afc_comm_ok(idx_att_ac_ok)) = true;
+
+    idx_att_bd_ok = find(bpm_ok4_);
+    bpm_ok4 = x;
+    bpm_ok4(idx_rfbpm_afc_comm_ok(idx_att_bd_ok)) = true;
+
     % Start BPM Reference Clock Test
     logtext(fid, 'trace', 'Checking if BPM clocks are locked to the reference clock sent through the crate backplane...');
-    bpm_ok5 = bpm_islocked(bpms);
+    bpm_ok5_ = bpm_islocked(bpms);
+    idx_lock_ok = find(bpm_ok5_);
+    bpm_ok5 = x;
+    bpm_ok5(idx_rfbpm_afc_comm_ok(idx_lock_ok)) = true;
     
     bpms_locked = bpms(bpm_ok5);
     
@@ -50,7 +78,10 @@ if ~isempty(bpms)
         % Start BPM Switching Test
         logtext(fid, 'trace', 'Checking if switching works properly on locked BPMs...');
         
-        bpm_ok6 = bpm_checksw(bpms_locked, checksw_param);
+        bpm_ok6_ = bpm_checksw(bpms_locked, checksw_param);
+        idx_sw_ok = find(bpm_ok6_);
+        bpm_ok6 = x;
+        bpm_ok6(idx_rfbpm_afc_comm_ok(idx_lock_ok(idx_sw_ok))) = true;
         
         % Start Monitoring Amplitude test
         logtext(fid, 'trace', 'Starting Amplitude test...');
@@ -85,3 +116,6 @@ raw_results.bpm_ok3 = bpm_ok3;
 raw_results.bpm_ok4 = bpm_ok4;
 raw_results.bpm_ok5 = bpm_ok5;
 raw_results.bpm_ok6 = bpm_ok6;
+
+results = [bpm_ok1 bpm_ok2 bpm_ok3 bpm_ok4 bpm_ok5 bpm_ok6];
+disp_results(results, rfbpms, {'Test #1', 'Test #2', 'Test #3', 'Test #4', 'Test #5', 'Test #6'});

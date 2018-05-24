@@ -58,11 +58,14 @@ refclk_ok = results(:,5) == 1;
 logtext(fid, 'trace', 'Checking if switching works properly on locked BPMs...');
 results(:,6) = bpm_checksw(rfbpms, checksw_param, refclk_ok & afc_ok);
 
+% BPMs which passed all tests
+bpm_ok = all(results,2);
+
 disp_results(results, rfbpms, test_names);
 
 % Start Monitoring Amplitude test
 logtext(fid, 'trace', 'Starting Amplitude test...');
-[X,Y,pv_names] = bpm_checkamp(rfbpms, checkamp_param, afc_ok & rffe_ok & refclk_ok);
+[X,Y,pv_names] = bpm_checkamp(rfbpms, checkamp_param, afc_ok, bpm_ok);
 
 raw_results.monit_amp = Y;
 raw_results.t = X*period_ms/1e3;

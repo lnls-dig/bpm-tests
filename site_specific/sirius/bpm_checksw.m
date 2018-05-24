@@ -1,4 +1,4 @@
-function [bpms_switching, bpms_notswitching, bpms_inactive] = bpm_checksw(bpms, params)
+function bpm_ok = bpm_checksw(bpms, params)
 
 sw_sts = caget(buildpvnames(bpms, 'SwMode-Sts'));
 caput(buildpvnames(bpms, 'SwMode-Sel'), 3);
@@ -24,15 +24,11 @@ idx_swharm_m1 = (nif.*sw_adc_factor-1).*nperiods+1;
     
 wvf_names = {'GEN_AArrayData', 'GEN_CArrayData', 'GEN_BArrayData', 'GEN_DArrayData'};
 
-switching = false(1,length(bpms));
+bpm_ok = false(1,length(bpms));
 for i=1:length(bpms)
     r = bpm_acquire(bpms(i), wvf_names, 0, npts(i));
     fft_wvfs = abs(fft(r.wvfs));
-    switching(i) = all((fft_wvfs(idx_swharm_p1(i), :)./fft_wvfs(idx_carrier(i), :) > params.swharm_threshold) & (fft_wvfs(idx_swharm_m1(i), :)./fft_wvfs(idx_carrier(i), :) > params.swharm_threshold));
+    bpm_ok(i) = all((fft_wvfs(idx_swharm_p1(i), :)./fft_wvfs(idx_carrier(i), :) > params.swharm_threshold) & (fft_wvfs(idx_swharm_m1(i), :)./fft_wvfs(idx_carrier(i), :) > params.swharm_threshold));
 end
 
 caput(buildpvnames(bpms, 'SwMode-Sel'), sw_sts);
-
-bpms_switching = bpms(switching);
-bpms_notswitching = bpms(~switching);
-bpms_inactive = []; % TODO: return inactive BPMs

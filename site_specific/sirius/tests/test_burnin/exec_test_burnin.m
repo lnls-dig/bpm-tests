@@ -29,86 +29,61 @@ checkatt_param.monit_amp_pv_names = monit_amp_pv_names;
 
 % Apply configuration and check which BPMs are alive
 logtext(fid, 'trace', 'Applying BPM and Photon BPM configurations and checking active units...');
-[bpm_ok, bpm_set] = bpm_config(config_path, crate_number);
-bpms = bpm_set{3}(bpm_ok{3}); % only RF BPMs
+[bpm_ok1, bpm_set] = bpm_config(config_path, crate_number);
+bpms = bpm_set{3}(bpm_ok1{3}); % only RF BPMs
 
-% Start BPM Reference Clock Test
 if ~isempty(bpms)
+    % Start quick amplitude test
+    bpm_ok2 = bpm_checkamp_quick(bpms, checkamp_param);
+    
+    % Start BPM Attenuator Test
+    logtext(fid, 'trace', 'Checking BPM attenuators or cables or RFFE/AFC correspondence...');
+    [bpm_ok3, bpm_ok4] = bpm_checkatt(bpms, checkatt_param);
+    
+    % Start BPM Reference Clock Test
     logtext(fid, 'trace', 'Checking if BPM clocks are locked to the reference clock sent through the crate backplane...');
-    [bpms_locked, bpms_notlocked, bpms_inactive] = bpm_islocked(bpms);
-    if isempty(bpms_notlocked)
-        logtext(fid, 'info', sprintf('All active BPMs are locked to the reference clock.'), true);
+    bpm_ok5 = bpm_islocked(bpms);
+    
+    bpms_locked = bpms(bpm_ok5);
+    
+    if ~isempty(bpms_locked)
+        % Start BPM Switching Test
+        logtext(fid, 'trace', 'Checking if switching works properly on locked BPMs...');
+        
+        bpm_ok6 = bpm_checksw(bpms_locked, checksw_param);
+        
+        % Start Monitoring Amplitude test
+        logtext(fid, 'trace', 'Starting Amplitude test...');
+        [X,Y,pv_names] = bpm_checkamp(bpms_locked, checkamp_param);
+        
+        raw_results.monit_amp = Y;
+        raw_results.t = X*period_ms/1e3;
+        raw_results.pv_names = pv_names;
+        
+        input('Done! Press <ENTER> to save data.');
     else
-        logtext(fid, 'error', sprintf('Some BPMs are not locked to the reference clock...'), true);
-        for i=1:length(bpms_notlocked)
-            logtext(fid, 'error', sprintf('Not locked BPM: %s', bpms_notlocked{i}), true);
-        end
+        logtext(fid, 'warning', 'Skipping switching and amplitude tests since there are no locked BPMs...', true);
+        bpm_ok6 = [];
     end
 else
     bpms_locked = [];
-    bpms_notlocked = [];
-end
-
-if ~isempty(bpms_locked)
-    % Start BPM Attenuator Test
-    logtext(fid, 'trace', 'Checking BPM attenuators or cables or RFFE/AFC correspondence...');
-
-    [bpms_ac_ok, bpms_ac_nok, bpms_bd_ok, bpms_bd_nok, bpms_inactive] = bpm_checkatt(bpms_locked, checkatt_param);
-    if isempty(bpms_ac_nok) && isempty(bpms_bd_nok)
-        logtext(fid, 'info', sprintf('All locked BPMs had an amplitude step due to an attenuator value step.'),true);
-    else
-        logtext(fid, 'info', sprintf('Some BPMs responded to an attenuator value step...'), true);
-        for i=1:length(bpms_ac_ok)
-            logtext(fid, 'info', sprintf('Channel pair TO-BI ok: %s', bpms_ac_ok{i}),true);
-        end
-        for i=1:length(bpms_bd_ok)
-            logtext(fid, 'info', sprintf('Channel pair TI-BO ok: %s', bpms_bd_ok{i}),true);
-        end
-
-        logtext(fid, 'error', sprintf('Some BPMs did not respond to an attenuator value step...'), true);
-        for i=1:length(bpms_ac_nok)
-            logtext(fid, 'error', sprintf('No proper response on channel pair TO-BI: %s', bpms_ac_nok{i}),true);
-        end
-        for i=1:length(bpms_bd_nok)
-            logtext(fid, 'error', sprintf('No proper response on channel pair TI-BO: %s', bpms_bd_nok{i}),true);
-        end
-    end
-
-    % Start BPM Switching Test
-    logtext(fid, 'trace', 'Checking if switching works properly on locked BPMs...');
-
-    [bpms_switching, bpms_notswitching] = bpm_checksw(bpms_locked, checksw_param);
-    if isempty(bpms_notswitching)
-        logtext(fid, 'info', sprintf('All locked BPMs are switching properly.'),true);
-    else
-        logtext(fid, 'error', sprintf('Some BPMs are not switching properly...'), true);
-        for i=1:length(bpms_notswitching)
-            logtext(fid, 'error', sprintf('Not switching: %s', bpms_notswitching{i}),true);
-        end
-    end
-
-    % Start Monitoring Amplitude test
-    logtext(fid, 'trace', 'Starting Amplitude test...');
-    [X,Y,pv_names] = bpm_checkamp(bpms, checkamp_param);
-
-    input('Done! Press <ENTER> to save data.');
-else
-    logtext(fid, 'warning', 'Skipping switching and amplitude tests since there are no locked BPMs...', true);
-    Y = [];
-    X = [];
-    pv_names = [];
-    bpms_switching = [];
-    bpms_notswitching = [];
+    bpm_ok2 = [];
+    bpm_ok3 = [];
+    bpm_ok4 = [];
+    bpm_ok5 = [];
+    bpm_ok6 = [];
 end
 
 if ~isempty(fid_logfile)
     fclose(fid_logfile);
 end
 
+raw_results.bpm_set = bpm_set;
+raw_results.bpms = bpms;
 raw_results.bpms_locked = bpms_locked;
-raw_results.bpms_notlocked = bpms_notlocked;
-raw_results.bpms_switching = bpms_switching;
-raw_results.bpms_notswitching = bpms_notswitching;
-raw_results.monit_amp = Y;
-raw_results.t = X*period_ms/1e3;
-raw_results.pv_names = pv_names;
+raw_results.bpm_ok1 = bpm_ok1;
+raw_results.bpm_ok2 = bpm_ok2;
+raw_results.bpm_ok3 = bpm_ok3;
+raw_results.bpm_ok4 = bpm_ok4;
+raw_results.bpm_ok5 = bpm_ok5;
+raw_results.bpm_ok6 = bpm_ok6;

@@ -59,8 +59,6 @@ if ~isempty(bpms)
         raw_results.monit_amp = Y;
         raw_results.t = X*period_ms/1e3;
         raw_results.pv_names = pv_names;
-        
-        input('Done! Press <ENTER> to save data.');
     else
         logtext(fid, 'warning', 'Skipping switching and amplitude tests since there are no locked BPMs...', true);
         bpm_ok6 = [];

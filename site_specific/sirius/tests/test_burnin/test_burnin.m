@@ -33,6 +33,9 @@ else
 
     raw_results = exec_test_burnin(config_path, crate_number, log_filename);
     
-    logtext(1, 'trace', sprintf('Saving log and data files to %s_%s.{log,mat}', datestr_start, test_name));
+    logtext(1, 'trace', sprintf('Saving log and data files to %s_%s.{log,mat}...', datestr_start, test_name));
     save(workspace_filename, 'raw_results');
+    
+    fprintf('\n\n');
+    input('DONE! Press <ENTER> to exit.');
 end

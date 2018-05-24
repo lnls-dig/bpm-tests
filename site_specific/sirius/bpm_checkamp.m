@@ -28,12 +28,12 @@ line(ax2, nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
 
 i = 1;
 for j=1:nvars/4
+    clr_idx = mod(j-1,size(clr,1))+1;
     for k=1:4
-        line_handles{i} = line(ax1, nan, nan, 'Color', clr(mod(j,size(clr,1)),:), 'LineWidth', 2, 'Marker', mrk{k});
+        line_handles{i} = line(ax1, nan, nan, 'Color', clr(clr_idx,:), 'LineWidth', 2, 'Marker', mrk{k});
         i = i+1;
     end
-
-    line(ax2, nan, nan, 'Color', clr(mod(j,size(clr,1)),:), 'LineWidth', 2);
+    line(ax2, nan, nan, 'Color', clr(clr_idx,:), 'LineWidth', 2);
 end
 
 legend(ax2, ['Reference'; bpms(:)]);

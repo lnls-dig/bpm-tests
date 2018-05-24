@@ -32,5 +32,7 @@ else
     workspace_filename = fullfile(test_results_path, sprintf('%s_%s.mat', datestr_start, test_name));
 
     raw_results = exec_test_burnin(config_path, crate_number, log_filename);
+    
+    logtext(1, 'trace', sprintf('Saving log and data files to %s_%s.{log,mat}', datestr_start, test_name));
     save(workspace_filename, 'raw_results');
 end

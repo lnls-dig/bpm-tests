@@ -28,7 +28,9 @@ config_files_pbpm = { ...
 
 % Apply configuration and check which BPMs are alive
 logtext(fid, 'trace', 'Applying BPM basic configurations and checking active units...');
-[bpms, bpms_inactive] = bpm_applyconfig(bpms, config_files_bpm);
+bpm_ok = bpm_applyconfig(bpms, config_files_bpm);
+bpms = bpms(bpm_ok); 
+bpms_inactive = bpms(~bpm_ok);
 for i=1:length(bpms)
     logtext(fid, 'info', sprintf('Active BPM: %s', bpms{i}));
 end
@@ -37,7 +39,9 @@ for i=1:length(bpms_inactive)
 end
 
 logtext(fid, 'trace', 'Applying photon BPM basic configurations and checking active units...');
-[pbpms, pbpms_inactive] = bpm_applyconfig(pbpms, config_files_pbpm);
+pbpm_ok = bpm_applyconfig(pbpms, config_files_pbpm);
+pbpms = pbpms(pbpm_ok); 
+pbpms_inactive = pbpms(~pbpm_ok);
 for i=1:length(pbpms)
     logtext(fid, 'info', sprintf('Active photon BPM: %s', pbpms{i}));
 end

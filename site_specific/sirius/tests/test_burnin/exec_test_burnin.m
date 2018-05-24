@@ -29,8 +29,8 @@ checkatt_param.monit_amp_pv_names = monit_amp_pv_names;
 
 % Apply configuration and check which BPMs are alive
 logtext(fid, 'trace', 'Applying BPM and Photon BPM configurations and checking active units...');
-r = bpm_config(config_path, crate_number, log_filename);
-bpms = r.bpms;
+[bpm_ok, bpm_set] = bpm_config(config_path, crate_number);
+bpms = bpm_set{3}(bpm_ok{3}); % only RF BPMs
 
 % Start BPM Reference Clock Test
 if ~isempty(bpms)

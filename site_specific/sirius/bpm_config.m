@@ -1,6 +1,6 @@
-function bpm_config(config_path, crate_number)
+function [bpm_ok, bpm_set] = bpm_config(config_path, crate_number)
 %CONFIGBPM   Configure BPMs of a single crate.
-%   BPM_CONFIG(config_path, crate_number)
+%   [bpm_ok, bpm_set] = BPM_CONFIG(config_path, crate_number)
 
 %   Copyright (C) 2017 CNPEM
 %   Licensed under GNU Lesser General Public License v3.0 (LGPL)
@@ -14,7 +14,7 @@ bpmtypes = filetext{2};
 rfbpms = bpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo') | strcmp(bpmtypes, 'rfbpm-sp'));
 
 bpm_set = { ...
-%     bpms; ...                                   All BPMs
+    bpms; ...                                   All BPMs
     bpms(strcmp(bpmtypes, 'pbpm')); ...         Photon BPMs
     rfbpms; ...                                 RF BPMs (AFC and FMC ADC setting)
     rfbpms; ...                                 RF BPMs (RFFE settings)
@@ -27,9 +27,10 @@ bpm_set = { ...
 probe_config_file = 'monit.cfg';
 
 config_files_set = { ...
-%     { ...   All BPMs
+    { ...   All BPMs
 %     'triggers.cfg'; ...
-%     };
+    fullfile(config_path, 'bpm', 'allbpms', 'monit.cfg'); ...
+    };
     
     { ...   Photon BPMs
     fullfile(config_path, 'bpm', 'pbpms', 'sirius-frontend-pbpm.cfg'); ...
@@ -56,7 +57,9 @@ config_files_set = { ...
     fullfile(config_path, 'bpm', 'rfbpms', 'sp', 'sirius-tl-stripline_bpm.cfg'); ...
     };
     };
-    
+
+bpm_ok = cell(length(bpm_set),1);
+
 for i=1:length(bpm_set)
-    bpm_applyconfig(bpm_set{i}, config_files_set{i});
+    bpm_ok{i} = bpm_applyconfig(bpm_set{i}, config_files_set{i});
 end

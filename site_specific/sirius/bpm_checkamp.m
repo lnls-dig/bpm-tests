@@ -1,6 +1,6 @@
-function [X,Y,pv_names] = bpm_checkamp(bpms, params)
+function [X,Y,pv_names] = bpm_checkamp(bpms, params, active)
 
-pv_names = buildpvnames(bpms, {'AmplA-Mon', 'AmplC-Mon', 'AmplB-Mon', 'AmplD-Mon'});
+pv_names = buildpvnames(bpms(active), {'AmplA-Mon', 'AmplC-Mon', 'AmplB-Mon', 'AmplD-Mon'});
 
 h = mcaopen(pv_names);
 nvars = length(h);

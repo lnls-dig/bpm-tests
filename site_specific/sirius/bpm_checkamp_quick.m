@@ -1,7 +1,13 @@
-function bpm_ok = bpm_checkamp_quick(bpms, params)
+function bpm_ok = bpm_checkamp_quick(bpms, params, active)
+
+if nargin < 3 || isempty(active)
+    active = true(size(bpms));
+end
+
+bpms_active = bpms(active);
 
 navg = 10;
-pv_names = buildpvnames(bpms, {'AmplA-Mon', 'AmplC-Mon', 'AmplB-Mon', 'AmplD-Mon'});
+pv_names = buildpvnames(bpms_active, {'AmplA-Mon', 'AmplC-Mon', 'AmplB-Mon', 'AmplD-Mon'});
 
 h = mcaopen(pv_names);
 data = zeros(1,length(pv_names));
@@ -12,10 +18,6 @@ end
 mcaclose(h);
 
 data = data/navg;
-
-nbpms = length(bpms);
-bpm_ok = false(nbpms,1);
-for i=1:nbpms
-    pct = data(:, (i-1)*4 + (1:4))/params.monit_amp_goal;
-    bpm_ok(i) = all(pct > 1 - params.monit_amp_var_tol_pct/100);
-end
+bpm_active_ok = all(reshape(data, 4, 11)'/params.monit_amp_goal > 1 - params.monit_amp_var_tol_pct/100,2);
+bpm_ok = nan(length(bpms),1);
+bpm_ok(active) =  double(bpm_active_ok);

@@ -1,3 +1,11 @@
-function bpm_ok = bpm_islocked(bpm_names)
+function bpm_ok = bpm_islocked(bpms, active)
 
-bpm_ok = caget(buildpvnames(bpm_names, 'ADCAD9510PllStatus-Mon')) == 1;
+if nargin < 2 || isempty(active)
+    active = true(size(bpms));
+end
+
+bpms_active = bpms(active);
+
+bpm_active_ok = caget(buildpvnames(bpms_active, 'ADCAD9510PllStatus-Mon')) == 1;
+bpm_ok = nan(length(bpms),1);
+bpm_ok(active) =  double(bpm_active_ok);

@@ -1,4 +1,4 @@
-function bpm_ok = bpm_checkatt(bpms, params, active)
+function [bpm_ok, raw] = bpm_checkatt(bpms, params, active)
 
 if nargin < 3 || isempty(active)
     active = true(size(bpms));
@@ -57,3 +57,5 @@ r = abs(r/params.navg_monit_amp);
 bpm_active_ok = all(r(:,1:4) > params.delta_att/2, 2);
 bpm_ok = nan(length(bpms),1);
 bpm_ok(active) =  double(bpm_active_ok);
+
+raw = [];

@@ -1,4 +1,4 @@
-function bpm_ok = bpm_checksw(bpms, params, active)
+function [bpm_ok, raw] = bpm_checksw(bpms, params, active)
 
 if nargin < 3 || isempty(active)
     active = true(size(bpms));
@@ -40,3 +40,5 @@ bpm_ok = nan(length(bpms),1);
 bpm_ok(active) =  double(bpm_active_ok);
 
 caput(buildpvnames(bpms_active, 'SwMode-Sel'), sw_sts);
+
+raw = [];

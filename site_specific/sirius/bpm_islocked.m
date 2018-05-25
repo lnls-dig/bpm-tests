@@ -10,4 +10,6 @@ bpm_active_ok = caget(buildpvnames(bpms_active, 'ADCAD9510PllStatus-Mon')) == 1;
 bpm_ok = nan(length(bpms),1);
 bpm_ok(active) =  double(bpm_active_ok);
 
-raw = [];
+raw.bpm = bpms;
+raw.active = active;
+raw.pllstatus = bpm_active_ok;  % TODO: replace by matrix with several pll status values

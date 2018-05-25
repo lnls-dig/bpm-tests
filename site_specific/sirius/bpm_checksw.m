@@ -41,4 +41,10 @@ bpm_ok(active) =  double(bpm_active_ok);
 
 caput(buildpvnames(bpms_active, 'SwMode-Sel'), sw_sts);
 
-raw = [];
+raw.bpm = bpms;
+raw.params = params;
+raw.active = active;
+raw.fft_wvfs = fft_wvfs;
+raw.h = h;
+raw.nadc = nadc;
+raw.nsw = nsw;

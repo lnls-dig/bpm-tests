@@ -22,7 +22,7 @@ namp = length(params.monit_amp_pv_names);
 delta_att = repmat(params.delta_att, 1, length(bpms_active));
 delta_att(att >= params.max_att) = -params.delta_att;
 
-r = zeros(length(bpms_active), namp);
+diff_amp = zeros(length(bpms_active), namp);
 for i=1:length(bpms_active)
     for j=1:2*params.navg_monit_amp
         if j <= params.navg_monit_amp
@@ -30,7 +30,7 @@ for i=1:length(bpms_active)
         else
             sig = 1;
         end
-        r(i,:) = r(i,:) + sig*20*log10(cageth(h_amp((i-1)*namp + (1:namp))));
+        diff_amp(i,:) = diff_amp(i,:) + sig*20*log10(cageth(h_amp((i-1)*namp + (1:namp))));
 
         if j == params.navg_monit_amp
             caputh(h_att_sp(i), att + delta_att);
@@ -53,9 +53,14 @@ if ~isempty(h_att_sp)
 end
 
 % Check channels
-r = abs(r/params.navg_monit_amp);
-bpm_active_ok = all(r(:,1:4) > params.delta_att/2, 2);
+diff_amp = abs(diff_amp/params.navg_monit_amp);
+bpm_active_ok = all(diff_amp(:,1:4) > params.delta_att/2, 2);
 bpm_ok = nan(length(bpms),1);
 bpm_ok(active) =  double(bpm_active_ok);
 
-raw = [];
+raw.bpm = bpms;
+raw.params = params;
+raw.active = active;
+raw.att = att;
+raw.delta_att = delta_att;
+raw.diff_amp = diff_amp;

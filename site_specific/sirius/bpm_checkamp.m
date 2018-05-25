@@ -19,7 +19,6 @@ clr = [ ...
     0        0        1
     1        0        0
     0        1        0
-    0        0        0.1724
     1        0.1034   0.7241
     1        0.8276   0
     0        0.3448   0
@@ -29,6 +28,7 @@ clr = [ ...
     0        0.5172   0.5862
     0        0        0.4828
     0.5862   0.8276   0.3103
+    0.9655   0.6207   0.8621
     ];
 
 mrk = { 'o', '*', '+', 'x'};
@@ -70,10 +70,8 @@ grid(ax1, 'on');
 title(ax1, 'Markers:    o (ch1/TO)   * (ch2/BI)   + (ch3/TI)   x (ch4/BO)');
 
 line_handles{nvars_graph+1} = line(ax1, nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
-line_handles{nvars_graph+2} = line(ax1, nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
 
 yref_inf = 100 - params.monit_amp_var_tol_pct;
-yref_sup = 100 + params.monit_amp_var_tol_pct;
 
 t = 1:params.graph_nsamples;
 y = nan(params.graph_nsamples, nvars_active);
@@ -97,8 +95,7 @@ for i=1:params.graph_nsamples
             set(line_handles{j}, 'XData', t(1:i), 'YData', pct(1:i,j));
         end
 
-        set(line_handles{nvars_graph+1}, 'XData', t([1 i]), 'YData', [yref_sup yref_sup]);
-        set(line_handles{nvars_graph+2}, 'XData', t([1 i]), 'YData', [yref_inf yref_inf]);
+        set(line_handles{nvars_graph+1}, 'XData', t([1 i]), 'YData', [yref_inf yref_inf]);
 
         pause(period_s);
     catch

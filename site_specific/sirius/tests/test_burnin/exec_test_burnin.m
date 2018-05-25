@@ -16,7 +16,7 @@ else
     end
     previous_test_run = fullfile(pathstr, [previous_test_run '.mat']);
     if ~exist(previous_test_run, 'file')
-        logtext(fid, 'error', sprintf('Could not find data from previous test in ''%s''. Aborting test...', previous_test_run));
+        logtext(fid, 'error', sprintf('Could not find data from previous test in ''%s''. Aborting test...', previous_test_run), true);
         results = [];
         return;
     end        

@@ -1,7 +1,7 @@
 function [bpm_ok, raw] = bpm_checkamp_quick(bpms, params, active)
 
 if nargin < 3 || isempty(active)
-    active = true(length(bpms));
+    active = true(size(bpms));
 end
 
 bpms_active = bpms(active);

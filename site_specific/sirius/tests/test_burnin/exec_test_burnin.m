@@ -16,12 +16,18 @@ else
     end
     previous_test_run = fullfile(pathstr, [previous_test_run '.mat']);
     if ~exist(previous_test_run, 'file')
-        logtext(fid, 'error', sprintf('Could not find data from previous test in ''%s''. Aborting test...', previous_test_run), true);
+        logtext(fid, 'error', sprintf('Could not find data from previous test in ''%s''. Aborting...', previous_test_run), true);
         results = [];
         return;
     end        
     load(previous_test_run, 'results');
-    previous_raw_results = results;
+    if isempty(results)
+        logtext(fid, 'error', 'The specified previous test has not generated usable data. Aborting...', true);
+        results = [];
+        return;
+    else
+        previous_raw_results = results;
+    end
 end
 
 % Load test parameters

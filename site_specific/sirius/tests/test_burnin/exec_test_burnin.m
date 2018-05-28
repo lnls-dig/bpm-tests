@@ -72,6 +72,7 @@ rffe_ok = pass_fail(:,2) == 1;
 % Start quick amplitude test
 logtext(fid, 'trace', 'Starting quick amplitude test...');
 [pass_fail(:,3), raw{3}] = bpm_checkamp_quick(rfbpms, checkamp_param, afc_ok);
+amp_ok = pass_fail(:,3) == 1;
 
 % Start BPM Attenuator Test
 logtext(fid, 'trace', 'Checking BPM attenuators or cables or RFFE/AFC correspondence...');
@@ -84,7 +85,7 @@ refclk_ok = pass_fail(:,5) == 1;
 
 % Start BPM Switching Test
 logtext(fid, 'trace', 'Checking if switching works properly on locked BPMs...');
-[pass_fail(:,6), raw{6}] = bpm_checksw(rfbpms, checksw_param, refclk_ok & afc_ok);
+[pass_fail(:,6), raw{6}] = bpm_checksw(rfbpms, checksw_param, refclk_ok & afc_ok & amp_ok);
 
 % BPMs which passed all tests
 bpm_ok = all(pass_fail,2);

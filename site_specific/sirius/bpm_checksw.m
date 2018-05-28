@@ -36,40 +36,23 @@ idx_swharm_m1 = (nif.*sw_adc_factor-1).*nperiods+1;
 wvf_names = {'GEN_AArrayData', 'GEN_CArrayData', 'GEN_BArrayData', 'GEN_DArrayData'};
 
 % Run data aqcuisitions with switching off
-j = 1;
-for i=1:length(bpms)
-    if active(i)
-        data_ = bpm_acquire(bpms(i), wvf_names, 0, npts(j), 1, 0.5);
-        data_presw{i} = data_.wvfs;
-        j=j+1;
-    else
-        data_presw{i} = nan(npts(j), length(wvf_names));
-    end
-end
+data_nosw = adc_acquire(bpms, active, wvf_names, npts);
 
 % Turn switching on
 caput(buildpvnames(bpms_active, 'SwMode-Sel'), 3);
 pause(0.5);
 
 % Run data aqcuisitions with switching on
-j = 1;
-for i=1:length(bpms)
-    if active(i)
-        data_ = bpm_acquire(bpms(i), wvf_names, 0, npts(j), 1, 0.5);
-        data_sw{i} = data_.wvfs;
-        j=j+1;
-    else
-        data_sw{i} = nan(npts(j), length(wvf_names));
-    end
-end
+data_sw = adc_acquire(bpms, active, wvf_names, npts);
+
 % Run data aqcuisitions with switching on
 bpm_ok = nan(length(bpms),1);
 j = 1;
 for i=1:length(bpms)
     if active(i)
-        fft_wvfs_presw = abs(fft(data_presw{i}));
+        fft_wvfs_nosw = abs(fft(data_nosw{i}));
         fft_wvfs_sw = abs(fft(data_sw{i}));
-        bpm_ok(i) = double(all((fft_wvfs_presw(idx_swharm_p1(j), :)./fft_wvfs_sw(idx_swharm_p1(j), :) < params.swharm_threshold) & (fft_wvfs_presw(idx_swharm_m1(j), :)./fft_wvfs_sw(idx_swharm_m1(j), :) < params.swharm_threshold)));
+        bpm_ok(i) = double(all((fft_wvfs_nosw(idx_swharm_p1(j), :)./fft_wvfs_sw(idx_swharm_p1(j), :) < params.swharm_threshold) & (fft_wvfs_nosw(idx_swharm_m1(j), :)./fft_wvfs_sw(idx_swharm_m1(j), :) < params.swharm_threshold)));
         j=j+1;
     end
 end
@@ -79,8 +62,22 @@ caput(buildpvnames(bpms_active, 'SwMode-Sel'), sw_sts);
 raw.bpm = bpms;
 raw.params = params;
 raw.active = active;
-raw.data_presw = data_presw;
+raw.data_nosw = data_nosw;
 raw.data_sw = data_sw;
 raw.h = h;
 raw.nadc = nadc;
 raw.nsw = nsw;
+
+
+function data = adc_acquire(bpms, active, wvf_names, npts)
+
+j = 1;
+for i=1:length(bpms)
+    if active(i)
+        data_ = bpm_acquire(bpms(i), wvf_names, 0, npts(j), 1, 0.5);
+        data{i} = data_.wvfs;
+        j=j+1;
+    else
+        data{i} = [];
+    end
+end

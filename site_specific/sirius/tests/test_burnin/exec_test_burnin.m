@@ -21,7 +21,7 @@ else
         return;
     end        
     load(previous_test_run, 'results');
-    if isempty(results)
+    if ~exist('results', 'var') || isempty(results)
         logtext(fid, 'error', 'The specified previous test has not generated usable data. Aborting...', true);
         results = [];
         return;

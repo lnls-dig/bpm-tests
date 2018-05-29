@@ -49,17 +49,21 @@ bpm_ok = nan(length(bpms),1);
 j = 1;
 for i=1:length(bpms)
     if active(i)
-        fft_wvfs_nosw = abs(fft(data_nosw{i}));
-        fft_wvfs_sw = abs(fft(data_sw{i}));
-        bpm_ok(i) = double(all((fft_wvfs_nosw(idx_swharm_p1(j), :)./fft_wvfs_sw(idx_swharm_p1(j), :) < params.swharm_threshold) & (fft_wvfs_nosw(idx_swharm_m1(j), :)./fft_wvfs_sw(idx_swharm_m1(j), :) < params.swharm_threshold)));
+        if ~isempty(data_nosw{i}) && ~isempty(data_sw{i})
+            window = repmat(flattopwin(npts(j)), 1, size(data_nosw{i},2));
+            fft_wvfs_nosw = abs(fft(data_nosw{i}.*window));
+            fft_wvfs_sw = abs(fft(data_sw{i}.*window));
+            bpm_ok(i) = double(all((fft_wvfs_nosw(idx_swharm_p1(j), :)./fft_wvfs_sw(idx_swharm_p1(j), :) < params.swharm_threshold) & (fft_wvfs_nosw(idx_swharm_m1(j), :)./fft_wvfs_sw(idx_swharm_m1(j), :) < params.swharm_threshold)));
+        end
         j=j+1;
+
     end
 end
 
 caput(buildpvnames(bpms_active, 'SwMode-Sel'), sw_sts);
 
 info.test_name = 'Switching';
-info.version = '1.0.0';
+info.version = '1.0.1';
 
 raw.bpm = bpms;
 raw.params = params;

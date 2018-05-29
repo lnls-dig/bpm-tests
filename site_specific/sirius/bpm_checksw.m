@@ -28,7 +28,6 @@ nif = nyqzone_even.*(nadc/2 - h + nyqzone.*nadc/2) + (1-nyqzone_even).*(h - nyqz
 nperiods = floor(1e5./nsw);
 npts = nperiods.*nsw;
 
-idx_carrier = nif.*sw_adc_factor.*nperiods+1;
 idx_swharm_p1 = (nif.*sw_adc_factor+1).*nperiods+1;
 idx_swharm_m1 = (nif.*sw_adc_factor-1).*nperiods+1;
 
@@ -40,12 +39,12 @@ data_nosw = adc_acquire(bpms, active, wvf_names, npts);
 
 % Turn switching on
 caput(buildpvnames(bpms_active, 'SwMode-Sel'), 3);
-pause(0.5);
+pause(2);
 
 % Run data aqcuisitions with switching on
 data_sw = adc_acquire(bpms, active, wvf_names, npts);
 
-% Run data aqcuisitions with switching on
+% Compare FFTs
 bpm_ok = nan(length(bpms),1);
 j = 1;
 for i=1:length(bpms)

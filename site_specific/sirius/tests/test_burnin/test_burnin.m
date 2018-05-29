@@ -1,6 +1,5 @@
 #!/usr/bin/octave -q
 arg_list = argv();
-%arg_list = {'14' '~/projects/bpm-cfg/foreign/bpm-tests/trash/'};
 
 datestr_start = datestr(now, 'yyyy-mm-dd_HH-MM-SS');
 

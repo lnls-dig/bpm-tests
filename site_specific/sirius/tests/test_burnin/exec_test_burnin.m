@@ -55,7 +55,7 @@ checkatt_param.navg_monit_amp = navg_monit_amp;
 checkatt_param.period_ms = period_ms;
 checkatt_param.monit_amp_pv_names = monit_amp_pv_names;
 
-test_names = {'EPICS AFC', 'EPICS RFFE', 'Amplitude', 'Att./Cable', 'Ref. clock', 'Switching'};
+test_names = {'EPICS AFC', 'EPICS RFFE', 'Amplitude', 'Att./Cable', 'Ref. clock', 'Switching'}; % TODO: get these names from the test itself (from function output argument)
 ntests = length(test_names);
 
 
@@ -85,7 +85,7 @@ refclk_ok = pass_fail(:,5) == 1;
 
 % Start BPM Switching Test
 logtext(fid, 'trace', 'Checking if switching works properly on locked BPMs...');
-[pass_fail(:,6), raw{6}] = bpm_checksw(rfbpms, checksw_param, refclk_ok & afc_ok & amp_ok);
+[pass_fail(:,6), raw{6}] = bpm_checksw(rfbpms, checksw_param, afc_ok & amp_ok);
 
 % BPMs which passed all tests
 bpm_ok = all(pass_fail,2);
@@ -103,6 +103,7 @@ if ~isempty(fid_logfile)
     fclose(fid_logfile);
 end
 
+results.test_names = test_names;
 results.bpms = rfbpms;
 results.pass_fail = pass_fail;
 results.raw = raw;

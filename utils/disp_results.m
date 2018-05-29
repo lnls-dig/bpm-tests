@@ -1,7 +1,11 @@
-function disp_results(result_matrix, row_names, col_names, fid)
+function disp_results(result_matrix, row_names, col_names, fid, colorized)
 
 if nargin < 4
     fid = 1;
+end
+
+if nargin < 5
+    colorized = true;
 end
 
 row_len = max_len(row_names, 4);
@@ -22,7 +26,7 @@ for i=1:length(fid)
     fprintf(fid(i), div_line);
     fprintf(fid(i), '\n');
     for j=1:nrows
-        if fid(i) == 1
+        if fid(i) == 1 && colorized
             if ~all(result_matrix(j,:)==1)
                 clr = '[31m';
             else
@@ -47,7 +51,7 @@ for i=1:length(fid)
                 result = 'fail';
                 clr = '[31m';
             end
-            if fid(i) == 1
+            if fid(i) == 1 && colorized
                 pre = [char(27) clr];
                 post = [char(27) '[0m'];
             else

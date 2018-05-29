@@ -8,12 +8,10 @@ if ~iscell(wvf_names)
     wvf_names = {wvf_names};
 end
 
-if nargin < 6
+if nargin < 5
     n = 1;
     pause_period = 0;
-end
-
-if nargin < 7
+elseif nargin < 6
     pause_period = 1;
 end
 
@@ -47,7 +45,7 @@ if ~isempty(active_bpms)
     %acqtrigvalue_stop = 1;
     %acqtrigvalue_abort = 2;
 
-    % Run acquisition loop while BPM names file has not changed
+    % Aqcuire
     for k=1:n
         for l=1:length(handles_acqtrigger)
             caputh(handles_acqtrigger(l), acqtrigvalue_start);

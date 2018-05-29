@@ -1,4 +1,4 @@
-function [bpm_ok, raw] = bpm_checkatt(bpms, params, active)
+function [bpm_ok, raw, info] = bpm_checkatt(bpms, params, active)
 
 if nargin < 3 || isempty(active)
     active = true(size(bpms));

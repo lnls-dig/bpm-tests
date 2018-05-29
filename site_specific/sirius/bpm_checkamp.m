@@ -1,4 +1,4 @@
-function [bpm_ok, raw] = bpm_checkamp(bpms, params, active, show_graph)
+function [bpm_ok, raw, info] = bpm_checkamp(bpms, params, active, show_graph)
 
 nbpms = length(bpms);
 

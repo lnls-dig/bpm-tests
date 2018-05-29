@@ -1,4 +1,4 @@
-function [bpm_ok, raw] = bpm_checksw(bpms, params, active)
+function [bpm_ok, raw, info] = bpm_checksw(bpms, params, active)
 
 nbpms = length(bpms);
 

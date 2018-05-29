@@ -1,4 +1,4 @@
-function [bpm_ok, raw] = bpm_checkamp_quick(bpms, params, active)
+function [bpm_ok, raw, info] = bpm_checkamp_quick(bpms, params, active)
 
 if nargin < 3 || isempty(active)
     active = true(size(bpms));
@@ -36,5 +36,11 @@ bpm_active_ok = all(reshape(amp(:, vars_active)./monit_amp_goal, 4, nvars_active
 bpm_ok = nan(length(bpms),1);
 bpm_ok(active) =  double(bpm_active_ok);
 
+info.test_name = 'Amplitude';
+info.version = '1.0.0';
+
+raw.bpms = bpms;
+raw.params = params;
+raw.active = active;
 raw.data = data;
 raw.amp = amp;

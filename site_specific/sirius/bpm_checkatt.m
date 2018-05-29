@@ -58,6 +58,9 @@ bpm_active_ok = all(diff_amp(:,1:4) > params.delta_att/2, 2);
 bpm_ok = nan(length(bpms),1);
 bpm_ok(active) =  double(bpm_active_ok);
 
+info.test_name = 'Att./Cable';
+info.version = '1.0.0';
+
 raw.bpm = bpms;
 raw.params = params;
 raw.active = active;

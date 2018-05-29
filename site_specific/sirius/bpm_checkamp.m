@@ -106,6 +106,12 @@ mcaclose(h);
 
 bpm_ok = [];
 
+info.test_name = 'Amplitude Graph';
+info.version = '1.0.0';
+
+raw.bpms = bpms;
+raw.params = params;
+raw.active = active;
 raw.pv_names = pv_names;
 raw.t = t;
 raw.y = y;

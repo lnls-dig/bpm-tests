@@ -59,6 +59,9 @@ end
 
 caput(buildpvnames(bpms_active, 'SwMode-Sel'), sw_sts);
 
+info.test_name = 'Switching';
+info.version = '1.0.0';
+
 raw.bpm = bpms;
 raw.params = params;
 raw.active = active;

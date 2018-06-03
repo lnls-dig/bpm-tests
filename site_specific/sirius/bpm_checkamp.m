@@ -73,21 +73,9 @@ end
 
 for i=1:nfigs
     for j=1:nvars_per_bpm
-        title(ax((i-1)*nvars_per_fig + j), var_names{j});
+        title(ax((i-1)*nvars_per_fig + j), {var_names{j}, sprintf('Goal #1: amplit. > %0.2g%%', -params.monit_amp_var_tol_pct), 'Goal #2: |bumps| < 0.01%'});
     end
 end
-
-for i=1:nvars_graph
-    txt1 = get(get(ax(i), 'Title'), 'String');
-    txt2 = sprintf('Goal: > %0.2g%%', -params.monit_amp_var_tol_pct);
-    if ~isempty(txt1)
-        txt = {txt1 txt2};
-    else
-        txt = txt2;
-    end
-    title(ax(i), txt);
-end
-
 
 % xlabel(ax1, 'Time [s]');
 % ylabel(ax1, 'Variation [%]');

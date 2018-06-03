@@ -104,16 +104,21 @@ else
     monit_amp_goal = monit_amp_goal(vars_show_graph);
 end
 
+tic;
 for i=1:params.graph_nsamples
     try
         y(i,:) = cageth(h);
         pct(i,:) = (y(i,vars_show_graph)./monit_amp_goal-1)*100;
         t(i) = (i-1)*period_s;
-
         for j=1:nvars_graph
             set(line_handles{j}, 'XData', t(1:i), 'YData', pct(1:i,j));
         end
-        pause(period_s);
+        drawnow;
+        time_to_wait = period_s - toc;
+        if time_to_wait > 0
+            pause(time_to_wait);
+        end
+        tic;
     catch
         break
     end

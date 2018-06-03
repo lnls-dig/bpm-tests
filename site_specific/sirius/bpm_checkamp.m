@@ -47,6 +47,7 @@ for i=1:nfigs
         else
             subplot(nbpms_per_fig,nvars_per_bpm,j);
             ax(k) = gca;
+            ax_pos(k,:) = get(ax(k), 'Position');
             k=k+1;
         end
     end
@@ -113,6 +114,15 @@ for i=1:params.graph_nsamples
         for j=1:nvars_graph
             set(line_handles{j}, 'XData', t(1:i), 'YData', pct(1:i,j));
         end
+
+        % FIXME: workaround to avoid Octave plotting bug
+        if i==2
+            for j=1:nvars_graph
+                k = mod(j-1,nvars_per_fig)+1;
+                set(ax(j), 'Position', ax_pos(k,:));
+            end
+        end
+
         drawnow;
         time_to_wait = period_s - toc;
         if time_to_wait > 0

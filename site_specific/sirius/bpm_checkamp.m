@@ -8,57 +8,72 @@ end
 
 show_graph = show_graph & active;
 
-pv_names = buildpvnames(bpms(active), {'AmplA-Mon', 'AmplC-Mon', 'AmplB-Mon', 'AmplD-Mon'});
+pv_props = {'AmplA-Mon', 'AmplC-Mon', 'AmplB-Mon', 'AmplD-Mon', 'PosX-Mon', 'PosY-Mon'};
+var_names = {'Ch. 1 / TO / A', 'Ch. 2 / BI / C', 'Ch. 3 / TI / B', 'Ch. 4 / BO / D', 'Pos X', 'Pos Y'};
+nvars_per_bpm = length(pv_props);
+
+nbpms_per_fig = 4;
+nvars_per_fig = nbpms_per_fig*nvars_per_bpm;
+
+pv_names = buildpvnames(bpms(active), pv_props);
 
 period_s = params.period_ms/1e3;
 
 h = mcaopen(pv_names);
 nvars_active = length(h);
 
-clr = lines(4);
+clr = [
+    0         0.4470    0.7410
+    0.8500    0.3250    0.0980
+    0.9290    0.6940    0.1250
+    0.4940    0.1840    0.5560
+    0.4660    0.6740    0.1880
+    0.3010    0.7450    0.9330
+    0.6350    0.0780    0.1840
+    ];
 
 idx_bpms_show_graph = find(show_graph);
 nbpms_graph = length(idx_bpms_show_graph);
-nvars_graph = nbpms_graph*4;
+nvars_graph = nbpms_graph*nvars_per_bpm;
+nvars = nbpms*nvars_per_bpm;
 
-nfigs = ceil(nbpms_graph/4);
+nfigs = ceil(nbpms_graph/nbpms_per_fig);
 k=1;
 for i=1:nfigs
     figure;
-    for j=1:16
+    for j=1:nvars_per_fig
         if k > nvars_graph
             break;
         else
-            subplot(4,4,j);
+            subplot(nbpms_per_fig,nvars_per_bpm,j);
             ax(k) = gca;
             k=k+1;
         end
     end
 end
 
-vars_active = false(1,4*nbpms);
-for i=1:4
-    vars_active(1,i:4:4*nbpms) = active;
+vars_active = false(1,nvars_per_bpm*nbpms);
+for i=1:nvars_per_bpm
+    vars_active(1,i:nvars_per_bpm:nvars) = active;
 end
 
 vars_show_graph = false(1,nvars_active);
-for i=1:4
-    vars_show_graph(1,i:4:nvars_active) = show_graph(active);
+for i=1:nvars_per_bpm
+    vars_show_graph(1,i:nvars_per_bpm:nvars_active) = show_graph(active);
 end
 
 for i=1:nvars_graph
-    line_handles{i} = line(ax(i), nan, nan, 'Color', clr(mod(i,4)+1,:), 'LineWidth', 2, 'Marker', '.');
+    line_handles{i} = line(ax(i), nan, nan, 'Color', clr(mod(i,nvars_per_bpm)+1,:), 'LineWidth', 2, 'Marker', '.');
 end
 
-for i=1:4:nvars_graph
-    ylabel(ax(i), {bpms{idx_bpms_show_graph(mod(i,4)+1)}, 'Variation [%]'});
+for i=1:nvars_per_bpm:nvars_graph
+    ylabel(ax(i), {bpms{idx_bpms_show_graph(mod(i,nvars_per_bpm)+1)}, 'Variation [%]'});
 end
 
 for i=1:nfigs
-    title(ax((i-1)*16+1), 'Ch. 1 / TO / A');
-    title(ax((i-1)*16+2), 'Ch. 2 / BI / C');
-    title(ax((i-1)*16+3), 'Ch. 3 / TI / B');
-    title(ax((i-1)*16+4), 'Ch. 4 / BO / D');
+    for j=1:nvars_per_bpm
+        title(ax((i-1)*nvars_per_fig + j), var_names{j});
+    end
 end
 
 for i=1:nvars_graph

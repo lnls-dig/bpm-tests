@@ -15,31 +15,26 @@ period_s = params.period_ms/1e3;
 h = mcaopen(pv_names);
 nvars_active = length(h);
 
-clr = [ ...
-    0        0        1
-    1        0        0
-    0        1        0
-    1        0.1034   0.7241
-    1        0.8276   0
-    0        0.3448   0
-    0.5172   0.5172   1
-    0.6207   0.3103   0.2759
-    0        1        0.7586
-    0        0.5172   0.5862
-    0        0        0.4828
-    0.5862   0.8276   0.3103
-    0.9655   0.6207   0.8621
-    ];
-
-mrk = { 'o', '*', '+', 'x'};
-
-figure;
-ax1 = axes('Position', [0.1 0.12 0.75 0.815]);
-ax2 = axes('Position', [1 0.12 0 0.815]);
-line(ax2, nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
+clr = lines(4);
 
 idx_bpms_show_graph = find(show_graph);
-nvars_graph = length(idx_bpms_show_graph)*4;
+nbpms_graph = length(idx_bpms_show_graph);
+nvars_graph = nbpms_graph*4;
+
+nfigs = ceil(nbpms_graph/4);
+k=1;
+for i=1:nfigs
+    figure;
+    for j=1:16
+        if k > nvars_graph
+            break;
+        else
+            subplot(4,4,j);
+            ax(k) = gca;
+            k=k+1;
+        end
+    end
+end
 
 vars_active = false(1,4*nbpms);
 for i=1:4
@@ -51,27 +46,36 @@ for i=1:4
     vars_show_graph(1,i:4:nvars_active) = show_graph(active);
 end
 
-i = 1;
-for j=1:nvars_graph/4
-    clr_idx = mod(j-1,size(clr,1))+1;
-    for k=1:4
-        line_handles{i} = line(ax1, nan, nan, 'Color', clr(clr_idx,:), 'LineWidth', 2, 'Marker', mrk{k});
-        i = i+1;
-    end
-    line(ax2, nan, nan, 'Color', clr(clr_idx,:), 'LineWidth', 2);
+for i=1:nvars_graph
+    line_handles{i} = line(ax(i), nan, nan, 'Color', clr(mod(i,4)+1,:), 'LineWidth', 2, 'Marker', '.');
 end
 
-legend(ax2, ['Reference'; bpms(show_graph)]);
-set(ax2, 'Visible', 'off');
+for i=1:4:nvars_graph
+    ylabel(ax(i), {bpms{idx_bpms_show_graph(mod(i,4)+1)}, 'Variation [%]'});
+end
 
-xlabel(ax1, 'Time [s]');
-ylabel(ax1, 'Variation [%]');
-grid(ax1, 'on');
-title(ax1, 'Markers:    o (ch1/TO)   * (ch2/BI)   + (ch3/TI)   x (ch4/BO)');
+for i=1:nfigs
+    title(ax((i-1)*16+1), 'Ch. 1 / TO / A');
+    title(ax((i-1)*16+2), 'Ch. 2 / BI / C');
+    title(ax((i-1)*16+3), 'Ch. 3 / TI / B');
+    title(ax((i-1)*16+4), 'Ch. 4 / BO / D');
+end
 
-line_handles{nvars_graph+1} = line(ax1, nan, nan, 'Color', [0 0 0], 'LineWidth', 5);
+for i=1:nvars_graph
+    txt1 = get(get(ax(i), 'Title'), 'String');
+    txt2 = sprintf('Goal: > %0.2g%%', -params.monit_amp_var_tol_pct);
+    if ~isempty(txt1)
+        txt = {txt1 txt2};
+    else
+        txt = txt2;
+    end
+    title(ax(i), txt);
+end
 
-yref_inf = 100 - params.monit_amp_var_tol_pct;
+
+% xlabel(ax1, 'Time [s]');
+% ylabel(ax1, 'Variation [%]');
+% grid(ax1, 'on');
 
 t = 1:params.graph_nsamples;
 y = nan(params.graph_nsamples, nvars_active);
@@ -88,15 +92,12 @@ end
 for i=1:params.graph_nsamples
     try
         y(i,:) = cageth(h);
-        pct(i,:) = y(i,vars_show_graph)./monit_amp_goal*100;
+        pct(i,:) = (y(i,vars_show_graph)./monit_amp_goal-1)*100;
         t(i) = (i-1)*period_s;
 
         for j=1:nvars_graph
             set(line_handles{j}, 'XData', t(1:i), 'YData', pct(1:i,j));
         end
-
-        set(line_handles{nvars_graph+1}, 'XData', t([1 i]), 'YData', [yref_inf yref_inf]);
-
         pause(period_s);
     catch
         break
@@ -107,7 +108,7 @@ mcaclose(h);
 bpm_ok = [];
 
 info.test_name = 'Amplitude Graph';
-info.version = '1.0.0';
+info.version = '1.1.0';
 
 raw.bpms = bpms;
 raw.params = params;

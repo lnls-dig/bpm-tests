@@ -68,7 +68,7 @@ for i=1:nvars_graph
 end
 
 for i=1:nvars_per_bpm:nvars_graph
-    ylabel(ax(i), {bpms{idx_bpms_show_graph(mod(i,nvars_per_bpm)+1)}, 'Variation [%]'});
+    ylabel(ax(i), {bpms{idx_bpms_show_graph(floor(i/nvars_per_bpm)+1)}, 'Variation [%]'});
 end
 
 for i=1:nfigs

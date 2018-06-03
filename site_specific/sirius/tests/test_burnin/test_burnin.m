@@ -16,6 +16,7 @@ elseif length(arg_list) < 2
 else
     warning off;
     initbpmtests;
+    pkg load signal;
     
     crate_number = str2double(arg_list{1});
     test_results_path = arg_list{2};
@@ -44,6 +45,6 @@ else
     save(workspace_filename, 'results', '-v7');
     
     fprintf('\n');
-    input('Press <ENTER> to exit.');
+    input('Press <ENTER> to exit.', 's');
     fprintf('\n');
 end

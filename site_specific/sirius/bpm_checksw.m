@@ -10,70 +10,70 @@ bpms_active = bpms(active);
 
 sw_sts = caget(buildpvnames(bpms_active, 'SwMode-Sts'));
 
-% Turn switching off
-caput(buildpvnames(bpms_active, 'SwMode-Sel'), 1);
-if check_sw_setting(bpms_active, 1)
-
-% Retrieve BPMs' numerology and determine number of points for coherent sampling
-h = caget(buildpvnames(bpms_active, 'INFOHarmonicNumber-RB'));
-nadc = caget(buildpvnames(bpms_active, 'INFOTBTRate-RB'));
-nsw = 2*caget(buildpvnames(bpms_active, 'SwDivClk-RB'));
-
-sw_adc_factor = round(nsw./nadc);
-
-nyqzone = floor(h./nadc*2);
-nyqzone_even = mod(nyqzone,2);
-nif = nyqzone_even.*(nadc/2 - h + nyqzone.*nadc/2) + (1-nyqzone_even).*(h - nyqzone.*nadc/2);
-
-nperiods = floor(1e5./nsw);
-npts = nperiods.*nsw;
-
-idx_swharm_p1 = (nif.*sw_adc_factor+1).*nperiods+1;
-idx_swharm_m1 = (nif.*sw_adc_factor-1).*nperiods+1;
-
-% Preapre for data acquistion
-wvf_names = {'GEN_AArrayData', 'GEN_CArrayData', 'GEN_BArrayData', 'GEN_DArrayData'};
-
-% Run data aqcuisitions with switching off
-data_nosw = adc_acquire(bpms, active, wvf_names, npts);
-
 % Fill default return values
 bpm_ok = nan(length(bpms),1);
 info.test_name = 'Switching';
 info.version = '1.0.2';
 raw = struct;
 
-% Turn switching on
-caput(buildpvnames(bpms_active, 'SwMode-Sel'), 3);
-if check_sw_setting(bpms_active, 3)
-    % Run data aqcuisitions with switching on
-    data_sw = adc_acquire(bpms, active, wvf_names, npts);
+% Turn switching off
+caput(buildpvnames(bpms_active, 'SwMode-Sel'), 1);
+if check_sw_setting(bpms_active, 1)
+    % Retrieve BPMs' numerology and determine number of points for coherent sampling
+    h = caget(buildpvnames(bpms_active, 'INFOHarmonicNumber-RB'));
+    nadc = caget(buildpvnames(bpms_active, 'INFOTBTRate-RB'));
+    nsw = 2*caget(buildpvnames(bpms_active, 'SwDivClk-RB'));
 
-    % Compare FFTs
-    j = 1;
-    for i=1:length(bpms)
-        if active(i)
-            if ~isempty(data_nosw{i}) && ~isempty(data_sw{i})
-                window = repmat(flattopwin(npts(j)), 1, size(data_nosw{i},2));
-                fft_wvfs_nosw = abs(fft(data_nosw{i}.*window));
-                fft_wvfs_sw = abs(fft(data_sw{i}.*window));
-                bpm_ok(i) = double(all((fft_wvfs_nosw(idx_swharm_p1(j), :)./fft_wvfs_sw(idx_swharm_p1(j), :) < params.swharm_threshold) & (fft_wvfs_nosw(idx_swharm_m1(j), :)./fft_wvfs_sw(idx_swharm_m1(j), :) < params.swharm_threshold)));
+    sw_adc_factor = round(nsw./nadc);
+
+    nyqzone = floor(h./nadc*2);
+    nyqzone_even = mod(nyqzone,2);
+    nif = nyqzone_even.*(nadc/2 - h + nyqzone.*nadc/2) + (1-nyqzone_even).*(h - nyqzone.*nadc/2);
+
+    nperiods = floor(1e5./nsw);
+    npts = nperiods.*nsw;
+
+    idx_swharm_p1 = (nif.*sw_adc_factor+1).*nperiods+1;
+    idx_swharm_m1 = (nif.*sw_adc_factor-1).*nperiods+1;
+
+    % Preapre for data acquistion
+    wvf_names = {'GEN_AArrayData', 'GEN_CArrayData', 'GEN_BArrayData', 'GEN_DArrayData'};
+
+    % Run data aqcuisitions with switching off
+    data_nosw = adc_acquire(bpms, active, wvf_names, npts);
+
+    % Turn switching on
+    caput(buildpvnames(bpms_active, 'SwMode-Sel'), 3);
+    if check_sw_setting(bpms_active, 3)
+        % Run data aqcuisitions with switching on
+        data_sw = adc_acquire(bpms, active, wvf_names, npts);
+
+        % Compare FFTs
+        j = 1;
+        for i=1:length(bpms)
+            if active(i)
+                if ~isempty(data_nosw{i}) && ~isempty(data_sw{i})
+                    window = repmat(flattopwin(npts(j)), 1, size(data_nosw{i},2));
+                    fft_wvfs_nosw = abs(fft(data_nosw{i}.*window));
+                    fft_wvfs_sw = abs(fft(data_sw{i}.*window));
+                    bpm_ok(i) = double(all((fft_wvfs_nosw(idx_swharm_p1(j), :)./fft_wvfs_sw(idx_swharm_p1(j), :) < params.swharm_threshold) & (fft_wvfs_nosw(idx_swharm_m1(j), :)./fft_wvfs_sw(idx_swharm_m1(j), :) < params.swharm_threshold)));
+                end
+                j=j+1;
+
             end
-            j=j+1;
-
         end
+
+        caput(buildpvnames(bpms_active, 'SwMode-Sel'), sw_sts);
+
+        raw.bpm = bpms;
+        raw.params = params;
+        raw.active = active;
+        raw.data_nosw = data_nosw;
+        raw.data_sw = data_sw;
+        raw.h = h;
+        raw.nadc = nadc;
+        raw.nsw = nsw;
     end
-
-    caput(buildpvnames(bpms_active, 'SwMode-Sel'), sw_sts);
-
-    raw.bpm = bpms;
-    raw.params = params;
-    raw.active = active;
-    raw.data_nosw = data_nosw;
-    raw.data_sw = data_sw;
-    raw.h = h;
-    raw.nadc = nadc;
-    raw.nsw = nsw;
 end
 
 function data = adc_acquire(bpms, active, wvf_names, npts)
@@ -90,9 +90,9 @@ for i=1:length(bpms)
 end
 
 function success = check_sw_setting(bpms, sw_state)
-    
+
 for i=1:10
-    if all(caget(buildpvnames(bpms, 'SwMode-Sts') == sw_state)
+    if all(caget(buildpvnames(bpms, 'SwMode-Sts')) == sw_state)
         success = true;
         return;
     else

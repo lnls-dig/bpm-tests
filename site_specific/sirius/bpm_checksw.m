@@ -13,40 +13,31 @@ sw_sts = caget(buildpvnames(bpms_active, 'SwMode-Sts'));
 % Fill default return values
 bpm_ok = nan(length(bpms),1);
 info.test_name = 'Switching';
-info.version = '1.0.2';
+info.version = '1.1.0';
 raw = struct;
 
 % Turn switching off
 caput(buildpvnames(bpms_active, 'SwMode-Sel'), 1);
 if check_sw_setting(bpms_active, 1)
     % Retrieve BPMs' numerology and determine number of points for coherent sampling
-    h = caget(buildpvnames(bpms_active, 'INFOHarmonicNumber-RB'));
-    nadc = caget(buildpvnames(bpms_active, 'INFOTBTRate-RB'));
+    ntbt = caget(buildpvnames(bpms_active, 'INFOTBTRate-RB'));
     nsw = 2*caget(buildpvnames(bpms_active, 'SwDivClk-RB'));
 
-    sw_adc_factor = round(nsw./nadc);
-
-    nyqzone = floor(h./nadc*2);
-    nyqzone_even = mod(nyqzone,2);
-    nif = nyqzone_even.*(nadc/2 - h + nyqzone.*nadc/2) + (1-nyqzone_even).*(h - nyqzone.*nadc/2);
-
-    nperiods = floor(1e5./nsw);
-    npts = nperiods.*nsw;
-
-    idx_swharm_p1 = (nif.*sw_adc_factor+1).*nperiods+1;
-    idx_swharm_m1 = (nif.*sw_adc_factor-1).*nperiods+1;
+    sw_tbt_factor = round(nsw./ntbt);
+    nperiods = floor(1e5./sw_tbt_factor);
+    npts = nperiods.*sw_tbt_factor;
 
     % Preapre for data acquistion
     wvf_names = {'GEN_AArrayData', 'GEN_CArrayData', 'GEN_BArrayData', 'GEN_DArrayData'};
 
     % Run data aqcuisitions with switching off
-    data_nosw = adc_acquire(bpms, active, wvf_names, npts);
+    data_nosw = tbt_acquire(bpms, active, wvf_names, npts);
 
-    % Turn switching on
-    caput(buildpvnames(bpms_active, 'SwMode-Sel'), 3);
-    if check_sw_setting(bpms_active, 3)
-        % Run data aqcuisitions with switching on
-        data_sw = adc_acquire(bpms, active, wvf_names, npts);
+    % Turn RFFE switching on (de-switching off)
+    caput(buildpvnames(bpms_active, 'SwMode-Sel'), 0);
+    if check_sw_setting(bpms_active, 0)
+        % Run data aqcuisitions with RFFE switching on
+        data_sw = tbt_acquire(bpms, active, wvf_names, npts);
 
         % Compare FFTs
         j = 1;
@@ -56,7 +47,14 @@ if check_sw_setting(bpms_active, 1)
                     window = repmat(flattopwin(npts(j)), 1, size(data_nosw{i},2));
                     fft_wvfs_nosw = abs(fft(data_nosw{i}.*window));
                     fft_wvfs_sw = abs(fft(data_sw{i}.*window));
-                    bpm_ok(i) = double(all((fft_wvfs_nosw(idx_swharm_p1(j), :)./fft_wvfs_sw(idx_swharm_p1(j), :) < params.swharm_threshold) & (fft_wvfs_nosw(idx_swharm_m1(j), :)./fft_wvfs_sw(idx_swharm_m1(j), :) < params.swharm_threshold)));
+                    
+                    % Calculate RMS value of all switching harmonics in
+                    % both switching states
+                    idx_swharm = nperiods(j)+1:nperiods(j):npts(j);
+                    swharm_rms_nosw = sqrt(sum(fft_wvfs_nosw(idx_swharm, :).^2));
+                    swharm_rms_sw = sqrt(sum(fft_wvfs_sw(idx_swharm, :).^2));
+                    
+                    bpm_ok(i) = double(all(swharm_rms_nosw./swharm_rms_sw < params.swharm_threshold));
                 end
                 j=j+1;
 
@@ -70,18 +68,17 @@ if check_sw_setting(bpms_active, 1)
         raw.active = active;
         raw.data_nosw = data_nosw;
         raw.data_sw = data_sw;
-        raw.h = h;
-        raw.nadc = nadc;
+        raw.ntbt = ntbt;
         raw.nsw = nsw;
     end
 end
 
-function data = adc_acquire(bpms, active, wvf_names, npts)
+function data = tbt_acquire(bpms, active, wvf_names, npts)
 
 j = 1;
 for i=1:length(bpms)
     if active(i)
-        data_ = bpm_acquire(bpms(i), wvf_names, 0, npts(j), 1, 0.5);
+        data_ = bpm_acquire(bpms(i), wvf_names, 2, npts(j), 1, 0.5);
         data{i} = data_.wvfs;
         j=j+1;
     else

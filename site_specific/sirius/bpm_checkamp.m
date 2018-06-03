@@ -8,8 +8,8 @@ end
 
 show_graph = show_graph & active;
 
-pv_props = {'AmplA-Mon', 'AmplC-Mon', 'AmplB-Mon', 'AmplD-Mon', 'PosX-Mon', 'PosY-Mon'};
-var_names = {'Ch. 1 / TO / A', 'Ch. 2 / BI / C', 'Ch. 3 / TI / B', 'Ch. 4 / BO / D', 'Pos X', 'Pos Y'};
+pv_props = {'AmplA-Mon', 'AmplC-Mon', 'AmplB-Mon', 'AmplD-Mon'};
+var_names = {'Ch. 1 / TO / A', 'Ch. 2 / BI / C', 'Ch. 3 / TI / B', 'Ch. 4 / BO / D'};
 nvars_per_bpm = length(pv_props);
 
 nbpms_per_fig = 4;

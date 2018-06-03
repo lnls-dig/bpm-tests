@@ -40,7 +40,7 @@ nvars = nbpms*nvars_per_bpm;
 nfigs = ceil(nbpms_graph/nbpms_per_fig);
 k=1;
 for i=1:nfigs
-    figure;
+    figure('Units', 'normalized', 'Position', [0 0 1 1]);
     for j=1:nvars_per_fig
         if k > nvars_graph
             break;
@@ -53,6 +53,11 @@ for i=1:nfigs
     end
 end
 
+% Inflate axes in order to get better visibility
+ax_pos(:,1) = ax_pos(:,1)*1.13-0.08;
+ax_pos(:,2) = ax_pos(:,2)-0.04;
+ax_pos(:,3:4) = ax_pos(:,3:4)*1.3;
+
 vars_active = false(1,nvars_per_bpm*nbpms);
 for i=1:nvars_per_bpm
     vars_active(1,i:nvars_per_bpm:nvars) = active;
@@ -64,11 +69,11 @@ for i=1:nvars_per_bpm
 end
 
 for i=1:nvars_graph
-    line_handles{i} = line(ax(i), nan, nan, 'Color', clr(mod(i,nvars_per_bpm)+1,:), 'LineWidth', 2, 'Marker', '.');
+    line_handles{i} = line(ax(i), nan, nan, 'Color', clr(mod(i-1,nvars_per_bpm)+1,:), 'Marker', '.');
 end
 
 for i=1:nvars_per_bpm:nvars_graph
-    ylabel(ax(i), {bpms{idx_bpms_show_graph(floor(i/nvars_per_bpm)+1)}, 'Variation [%]'});
+    ylabel(ax(i), {bpms{idx_bpms_show_graph(floor(i/nvars_per_bpm)+1)}, 'Variation [%]'}, 'FontWeight', 'bold');
 end
 
 for i=1:nfigs
@@ -76,10 +81,6 @@ for i=1:nfigs
         title(ax((i-1)*nvars_per_fig + j), {var_names{j}, sprintf('Goal #1: amplit. > %0.2g%%', -params.monit_amp_var_tol_pct), 'Goal #2: |bumps| < 0.01%'});
     end
 end
-
-% xlabel(ax1, 'Time [s]');
-% ylabel(ax1, 'Variation [%]');
-% grid(ax1, 'on');
 
 t = 1:params.graph_nsamples;
 y = nan(params.graph_nsamples, nvars_active);

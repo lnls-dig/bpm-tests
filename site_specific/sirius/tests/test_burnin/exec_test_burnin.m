@@ -84,7 +84,7 @@ logtext(fid, 'trace', 'Checking if BPM clocks are locked to the reference clock 
 refclk_ok = pass_fail(:,5) == 1;
 
 % Start BPM Switching Test
-logtext(fid, 'trace', 'Checking if switching works properly on locked BPMs...');
+logtext(fid, 'trace', 'Checking if switching works properly...');
 [pass_fail(:,6), raw{6}] = bpm_checksw(rfbpms, checksw_param, afc_ok & amp_ok);
 
 % BPMs which passed all tests

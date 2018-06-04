@@ -47,13 +47,29 @@ if ~isempty(active_bpms)
 
     % Aqcuire
     for k=1:n
-        for l=1:length(handles_acqtrigger)
-            caputh(handles_acqtrigger(l), acqtrigvalue_start);
-            pause(0.001); % To prevent overflowing RAM memory bandwidth when triggering ADC data acquisition on BPMs sharing a common RAM
-        end
-        pause(pause_period);
+        % Acquire before acquisition trigger only to get timestamps
+        cagetwvfh(handles_waveforms);
+        tstamps1 = mcatime_ns(handles_waveforms.val);
 
-        wvfs(:,:,k) = cagetwvfh(handles_waveforms);
+        some_not_updated = true;
+        try_idx = 1;
+        while some_not_updated
+            if try_idx > 10
+                wvfs = [];
+                break;
+            end
+            try_idx = try_idx + 1;
+            for l=1:length(handles_acqtrigger)
+                caputh(handles_acqtrigger(l), acqtrigvalue_start);
+                pause(0.001); % To prevent overflowing RAM memory bandwidth when triggering ADC data acquisition on BPMs sharing a common RAM
+            end
+            pause(pause_period);
+
+            wvfs(:,:,k) = cagetwvfh(handles_waveforms);
+            tstamps2 = mcatime_ns(handles_waveforms.val);
+
+            some_not_updated = any(all(tstamps1 == tstamps2, 2));
+        end
     end
 
     % Close all MCA handles
@@ -69,4 +85,17 @@ if ~isempty(active_bpms)
 else
     r.wvfs = [];
     r.pv_names = [];
+end
+
+
+function tstamps = mcatime_ns(handles)
+
+nwvfs = length(handles);
+tstamps = zeros(nwvfs, 7);
+
+for i=1:nwvfs
+    try
+        tstamps(i,:) = mca(60, handles(i));
+    catch
+    end
 end

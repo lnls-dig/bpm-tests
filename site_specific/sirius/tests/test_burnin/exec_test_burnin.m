@@ -43,8 +43,15 @@ if isempty(previous_raw_results)
     checkamp_param.monit_amp_var_tol_pct = monit_amp_var_tol_pct;
     checkamp_param.monit_amp_goal = monit_amp_goal;
 else
+    bpm_amp_ok_previous = previous_raw_results.pass_fail(:,3) == 1;
+    namps = size(previous_raw_results.raw{3}.amp,2);
     checkamp_param.monit_amp_var_tol_pct = monit_amp_var_tol_pct_rerun;
-    checkamp_param.monit_amp_goal = previous_raw_results.raw{3}.amp;
+    checkamp_param.monit_amp_goal = repmat(monit_amp_goal, 1, namps);
+    amp_ok_previous = false(1,namps);
+    for i=1:4
+        amp_ok_previous(1,i:4:namps) = bpm_amp_ok_previous;
+    end    
+    checkamp_param.monit_amp_goal(amp_ok_previous) = previous_raw_results.raw{3}.amp(amp_ok_previous);
 end
 checkamp_param.graph_nsamples = graph_nsamples;
 checkamp_param.period_ms = period_ms;

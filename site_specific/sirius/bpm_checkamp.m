@@ -53,10 +53,12 @@ for i=1:nfigs
     end
 end
 
-% Inflate axes in order to get better visibility
-ax_pos(:,1) = ax_pos(:,1)*1.13-0.08;
-ax_pos(:,2) = ax_pos(:,2)-0.04;
-ax_pos(:,3:4) = ax_pos(:,3:4)*1.3;
+if nfigs > 0
+    % Inflate axes in order to get better visibility
+    ax_pos(:,1) = ax_pos(:,1)*1.13-0.08;
+    ax_pos(:,2) = ax_pos(:,2)-0.04;
+    ax_pos(:,3:4) = ax_pos(:,3:4)*1.3;
+end
 
 vars_active = false(1,nvars_per_bpm*nbpms);
 for i=1:nvars_per_bpm

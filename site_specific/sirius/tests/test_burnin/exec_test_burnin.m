@@ -1,5 +1,7 @@
 function results = exec_test_burnin(config_path, crate_number, log_filename, previous_test_run)
 
+waittime_between_experiments = 5;
+
 if nargin < 3 || isempty(log_filename)
     fid_logfile = [];
 else
@@ -75,6 +77,7 @@ pass_fail(:,1) = double(bpm_ok_array{3});
 pass_fail(:,2) = double(bpm_ok_array{4});
 afc_ok = pass_fail(:,1) == 1;
 rffe_ok = pass_fail(:,2) == 1;
+pause(waittime_between_experiments);
 
 % Start quick amplitude test
 logtext(fid, 'trace', 'Starting quick amplitude test...');
@@ -84,15 +87,18 @@ amp_ok = pass_fail(:,3) == 1;
 % Start BPM Attenuator Test
 logtext(fid, 'trace', 'Checking BPM attenuators or cables or RFFE/AFC correspondence...');
 [pass_fail(:,4), raw{4}] = bpm_checkatt(rfbpms, checkatt_param, afc_ok & rffe_ok);
+pause(waittime_between_experiments);
 
 % Start BPM Reference Clock Test
 logtext(fid, 'trace', 'Checking if BPM clocks are locked to the reference clock sent through the crate backplane...');
 [pass_fail(:,5), raw{5}] = bpm_islocked(rfbpms, afc_ok);
 refclk_ok = pass_fail(:,5) == 1;
+pause(waittime_between_experiments);
 
 % Start BPM Switching Test
 logtext(fid, 'trace', 'Checking if switching works properly...');
 [pass_fail(:,6), raw{6}] = bpm_checksw(rfbpms, checksw_param, afc_ok & amp_ok);
+pause(waittime_between_experiments);
 
 % BPMs which passed all tests
 bpm_ok = all(pass_fail,2);

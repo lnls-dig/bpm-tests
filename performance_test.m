@@ -1,4 +1,4 @@
-function performance_test(crate_number)
+function performance_test(crate_number, evr)
 
 % Parameteres
 gen_ip = '10.0.9.96';
@@ -30,8 +30,12 @@ pause(2);
 
 bpms = bpm_set{3};
 
+if nargin < 2
+    evr = sprintf('XX-%02dSL01:TI-EVR', crate_number);
+end
+
 % Synchronize Storage Ring and Booster BPMs switching
-pv_amc0state = buildpvnames(sprintf('XX-%02dSL01:TI-EVR', crate_number), {'AMC0State-Sel'});
+pv_amc0state = buildpvnames(evr, {'AMC0State-Sel'});
 caput(pv_amc0state, 1);
 pause(2);
 caput(pv_amc0state, 0);

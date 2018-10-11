@@ -25,8 +25,10 @@ raw_data_ch = 0:6;
 sw_flag = {'sw', 'nosw'};
 
 % Configure BPMs
-[~,~,bpms] = bpm_config('/home/danielot/projects/bpm-cfg/foreign/bpm-tests/site_specific/sirius/config', crate_number);
+[~,bpm_set] = bpm_config('/home/danielot/projects/bpm-cfg/foreign/bpm-tests/site_specific/sirius/config', crate_number);
 pause(2);
+
+bpms = bpm_set{3};
 
 % Synchronize Storage Ring and Booster BPMs switching
 pv_amc0state = buildpvnames(sprintf('XX-%02dSL01:TI-EVR', crate_number), {'AMC0State-Sel'});
@@ -189,11 +191,3 @@ end
 
 bpm_config('/home/danielot/projects/bpm-cfg/foreign/bpm-tests/site_specific/sirius/config', crate_number);
 rs_send_command(rssma_handle, sprintf('POW %0.2f dBm', Pout_gen_default));
-
-% Long-term drift test
-pause(12*60*60 + 15*60);
-
-% Test position dependence to general BPM resets
-for i=1:10
-    bpm_config('/home/danielot/projects/bpm-cfg/foreign/bpm-tests/site_specific/sirius/config', crate_number);
-end

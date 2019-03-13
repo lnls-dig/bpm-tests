@@ -7,9 +7,13 @@ function [bpm_ok, bpm_set] = bpm_config(config_path, crate_number)
 %
 %   Author (Jun-2017): Daniel Tavares (LNLS/DIG) - daniel.tavares@lnls.br
 
-filetext = readstrlines(fullfile(config_path, 'bpm', sprintf('names_crate%02d.cfg', crate_number)), '%s %s');
-bpms = filetext{1};
-bpmtypes = filetext{2};
+bpms = {};
+bpmtypes = {};
+for i=1:length(crate_number)
+    filetext = readstrlines(fullfile(config_path, 'bpm', sprintf('names_crate%02d.cfg', crate_number(i))), '%s %s');
+    bpms = [bpms; filetext{1}];
+    bpmtypes = [bpmtypes; filetext{2}];
+end
 
 rfbpms = bpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo') | strcmp(bpmtypes, 'rfbpm-sp'));
 

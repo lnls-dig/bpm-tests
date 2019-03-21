@@ -27,6 +27,7 @@ bpm_set = { ...
     bpms(strcmp(bpmtypes, 'rfbpm-sr')); ...     RF BPMs (only Storage Ring)
     bpms(strcmp(bpmtypes, 'rfbpm-boo')); ...    RF BPMs (only Booster)
     bpms(strcmp(bpmtypes, 'rfbpm-sp')); ...     RF BPMs (only Single Pass (Transfer Lines or Linac))
+    {}; ...
     };
 
 % Filter out inactive BPMs
@@ -66,6 +67,11 @@ config_files_set = { ...
     
     { ...	RF BPMs (only Single Pass (Transfer Lines or Linac))
     fullfile(config_path, 'bpm', 'rfbpms', 'sp', 'sirius-tl-stripline_bpm.cfg'); ...
+    };
+    
+    { ...   PV by PV
+    fullfile(config_path, 'bpm', 'pvs', 'ksum.cfg'); ...
+    fullfile(config_path, 'bpm', 'pvs', 'triggerdelay.cfg'); ...
     };
     };
 

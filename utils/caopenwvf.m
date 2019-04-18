@@ -3,7 +3,7 @@ function handles = caopenwvf(pvnames)
 %
 %   handles = caopenwvf(pvnames)
 %
-%   See also CAGETWVFH, CACLOSEWVF.
+%   See also CAGETWVFH, CAPUTWVFH, CACLOSEWVF.
 
 %   Copyright (C) 2017 CNPEM
 %   Licensed under GNU Lesser General Public License v3.0 (LGPL)
@@ -15,5 +15,6 @@ if ischar(pvnames)
 end
 
 pvnord = cellfun(@horzcat, pvnames, repmat({'.NORD'}, 1, length(pvnames)), 'UniformOutput', 0);
+pvnelm = cellfun(@horzcat, pvnames, repmat({'.NELM'}, 1, length(pvnames)), 'UniformOutput', 0);
 
-handles = struct('val', mcaopen(pvnames), 'nord', mcaopen(pvnord));
+handles = struct('val', mcaopen(pvnames), 'nord', mcaopen(pvnord), 'nelm', mcaopen(pvnelm));

@@ -11,13 +11,16 @@ if  ~isempty(param)
         bpm_ok = ~isnan(caget(buildpvnames(bpm_names, probe_pv_property)));
         bpm_names = bpm_names(bpm_ok);
         if ~isempty(bpm_names)
-            pv_ok = caput(buildpvnames(bpm_names{1}, param), value) == 1;
+            pv_ok = ~isnan(caget(buildpvnames(bpm_names{1},param)));
             param = param(pv_ok);
             value = value(pv_ok);
-            if length(bpm_names) > 1
-                caput(buildpvnames(bpm_names(2:end), param), repmat(value, length(bpm_names)-1, 1));
-            else
-                pv_ok = [];
+            pv_ok = [];
+            for i=1:length(param)
+                if isscalar(value{i})
+                    caput(buildpvnames(bpm_names, param{i}), repmat(value{i}, length(bpm_names), 1));
+                else
+                    caputwvf(buildpvnames(bpm_names, param{i}), repmat(value{i}(:), 1, length(bpm_names)));
+                end
             end
         else
             pv_ok = [];

@@ -1,7 +1,7 @@
 function [param, value, device] = bpm_readconfig(config_files)
 
 param = {};
-value = [];
+value = {};
 device = {};
 for i=1:length(config_files)
     aux = readstrlines(config_files{i}, '%s %s %s');

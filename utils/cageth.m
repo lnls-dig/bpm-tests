@@ -5,7 +5,7 @@ function values = cageth(handles, checkstate)
 %   function as it does not need to open and close the PV connection every
 %   call.
 %
-%   [values, notfound] = cageth(handles, checkstate)
+%   values = cageth(handles, checkstate)
 %
 %   INPUTS:
 %       handles:    1D array of MCA PV handles.

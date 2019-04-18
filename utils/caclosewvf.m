@@ -3,7 +3,7 @@ function caclosewvf(handles)
 %
 %   caclosewvf(handles)
 %
-%   See also CAGETWVFH, CACLOSEWVF.
+%   See also CAGETWVFH, CAPUTWVFH, CACLOSEWVF.
 
 %   Copyright (C) 2017 CNPEM
 %   Licensed under GNU Lesser General Public License v3.0 (LGPL)

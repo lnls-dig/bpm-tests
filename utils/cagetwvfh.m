@@ -5,7 +5,7 @@ function wvfdata = cagetwvfh(handles, checkstate)
 %   The NORD record is used to determine the number of samples to be read
 %   from a waveform PV.
 %
-%   [wvfdata, notfound] = cagetwvfh(handles, checkstate)
+%   wvfdata = cagetwvfh(handles, checkstate)
 %
 %   INPUTS:
 %       handles:    1D array of MCA waveform PV handles. To generate valid
@@ -21,7 +21,7 @@ function wvfdata = cagetwvfh(handles, checkstate)
 %                   waveform) an array of NaN values is returned in the
 %                   corresponding matrix column.
 %
-%   See also CAOPENWVF, CACLOSEWVF, CAGET, MCAGET.
+%   See also CAOPENWVF, CACLOSEWVF, CAPUTWVFH, CAGET, MCAGET.
 
 %   Copyright (C) 2017 CNPEM
 %   Licensed under GNU Lesser General Public License v3.0 (LGPL)

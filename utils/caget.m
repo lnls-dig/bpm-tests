@@ -4,7 +4,7 @@ function values = caget(pvnames)
 %   Every call of CAGET opens and closes the connection to the PVs. For
 %   performance, prefer using the function cageth.
 %
-%   [values, notfound] = caget(pvnames)
+%   values = caget(pvnames)
 %
 %   INPUTS:
 %       pvnames:    1D cell array of strings containing PV names. It can

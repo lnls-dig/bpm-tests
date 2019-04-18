@@ -7,7 +7,7 @@ function wvfdata = cagetwvf(pvnames)
 %   Every call of CAGETWVF opens and closes the connection to the PVs. For
 %   performance, prefer using the function cagetwvfh.
 %
-%   [wvfdata, notfound] = cagetwvf(pvnames)
+%   wvfdata = cagetwvf(pvnames)
 %
 %   INPUTS:
 %       pvnames:    1D cell array of strings containing waveform PV names.

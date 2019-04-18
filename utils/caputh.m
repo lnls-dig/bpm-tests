@@ -5,7 +5,7 @@ function status = caputh(handles, values, checkstate)
 %   function as it does not need to open and close the PV connections every
 %   call.
 %
-%   [status, notfound] = caputh(handles, values, checkstate)
+%   status = caputh(handles, values, checkstate)
 %
 %   INPUTS:
 %       handles:    1D array of MCA PV handles.

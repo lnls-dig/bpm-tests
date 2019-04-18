@@ -4,7 +4,7 @@ function status = caput(pvnames, values)
 %   Every call of CAPUT opens and closes the connection to the PVs. For
 %   performance, prefer using the function caputh.
 %
-%   [status, notfound] = caput(pvnames, values)
+%   status = caput(pvnames, values)
 %
 %   INPUTS:
 %       pvnames:    1D cell array of strings containing PV names. It can

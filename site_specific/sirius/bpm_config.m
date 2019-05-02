@@ -7,26 +7,20 @@ function [bpm_ok, bpm_set] = bpm_config(config_path, crate_number)
 %
 %   Author (Jun-2017): Daniel Tavares (LNLS/DIG) - daniel.tavares@lnls.br
 
-bpms = {};
-bpmtypes = {};
-for i=1:length(crate_number)
-    filetext = readstrlines(fullfile(config_path, 'bpm', sprintf('names_crate%02d.cfg', crate_number(i))), '%s %s');
-    bpms = [bpms; filetext{1}];
-    bpmtypes = [bpmtypes; filetext{2}];
-end
+names = bpm_names(config_path, crate_number);
 
-tim = bpms(strcmp(bpmtypes, 'tim'));
-rfbpms = bpms(strcmp(bpmtypes, 'rfbpm-sr') | strcmp(bpmtypes, 'rfbpm-boo') | strcmp(bpmtypes, 'rfbpm-sp'));
+rfbpms = [names.rfbpms.sp; names.rfbpms.boo; names.rfbpms.sr];
+bpms = [rfbpms; names.pbpms];
 
 bpm_set = { ...
-    tim;
+    names.tim;
     bpms; ...                                   All BPMs
-    bpms(strcmp(bpmtypes, 'pbpm')); ...         Photon BPMs
+    names.pbpms; ...                            Photon BPMs
     rfbpms; ...                                 RF BPMs (AFC and FMC ADC setting)
     rfbpms; ...                                 RF BPMs (RFFE settings)
-    bpms(strcmp(bpmtypes, 'rfbpm-sr')); ...     RF BPMs (only Storage Ring)
-    bpms(strcmp(bpmtypes, 'rfbpm-boo')); ...    RF BPMs (only Booster)
-    bpms(strcmp(bpmtypes, 'rfbpm-sp')); ...     RF BPMs (only Single Pass (Transfer Lines or Linac))
+    names.rfbpms.sr; ...                        RF BPMs (only Storage Ring)
+    names.rfbpms.boo; ...                       RF BPMs (only Booster)
+    names.rfbpms.sp; ...                        RF BPMs (only Single Pass (Transfer Lines or Linac))
     {}; ...
     };
 
@@ -57,15 +51,15 @@ config_files_set = { ...
     fullfile(config_path, 'bpm', 'rfbpms', 'rffe_basic.cfg'); ...
     };
     
-    { ...	RF BPMs (only Storage Ring)
+    { ...   RF BPMs (only Storage Ring)
     fullfile(config_path, 'bpm', 'rfbpms', 'sr', 'sirius-sr-button_bpm.cfg'); ...
     };
     
-    { ...	RF BPMs (only Booster)
+    { ...   RF BPMs (only Booster)
     fullfile(config_path, 'bpm', 'rfbpms', 'boo', 'sirius-boo-button_bpm.cfg'); ...
     };
     
-    { ...	RF BPMs (only Single Pass (Transfer Lines or Linac))
+    { ...   RF BPMs (only Single Pass (Transfer Lines or Linac))
     fullfile(config_path, 'bpm', 'rfbpms', 'sp', 'sirius-tl-stripline_bpm.cfg'); ...
     };
     

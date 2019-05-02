@@ -14,10 +14,9 @@ if  ~isempty(param)
             pv_ok = ~isnan(caget(buildpvnames(bpm_names{1},param)));
             param = param(pv_ok);
             value = value(pv_ok);
-            pv_ok = [];
             for i=1:length(param)
                 if isscalar(value{i})
-                    caput(buildpvnames(bpm_names, param{i}), repmat(value{i}, length(bpm_names), 1));
+                    caput(buildpvnames(bpm_names, param{i}), value{i});
                 else
                     caputwvf(buildpvnames(bpm_names, param{i}), repmat(value{i}(:), 1, length(bpm_names)));
                 end
@@ -27,7 +26,14 @@ if  ~isempty(param)
         end
     else
         bpm_ok = [];
-        pv_ok = caput(param, value) == 1;
+        pv_ok = ~isnan(caget(param));
+        for i=1:length(param)
+            if isscalar(value{i})
+                caput(param{i}, value{i});
+            else
+                caputwvf(param{i}, value{i});
+            end
+        end
     end
 else
     bpm_ok = [];

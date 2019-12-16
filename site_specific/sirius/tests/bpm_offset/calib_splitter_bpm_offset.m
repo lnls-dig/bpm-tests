@@ -99,6 +99,7 @@ for ispl=1:length(data_direct_waveforms)
 end
 
 %%
+sum_comp = {};
 ad = {}; bd = {}; cd = {}; dd = {};
 ai = {}; bi = {}; ci = {}; di = {};
 xd = {}; yd = {};
@@ -113,13 +114,13 @@ for ispl=1:length(data_direct)
     
     data_amp_d = data_direct{ispl}(:,:,1:4);
     avg_amp = exp(mean(log(data_amp_d),3));
-    avg_amp = repmat(avg_amp, 1, 1, 4, 1);
-    data_amp_norm_d = data_amp_d./avg_amp;
+    avg_amp_rep = repmat(avg_amp, 1, 1, 4, 1);
+    data_amp_norm_d = data_amp_d./avg_amp_rep;
     
     data_amp_i = data_invert{ispl}(:,:,1:4);
-    avg_amp = exp(mean(log(data_amp_i),3));
-    avg_amp = repmat(avg_amp, 1, 1, 4, 1);
-    data_amp_norm_i = data_amp_i./avg_amp;
+    avg_amp_rep = exp(mean(log(data_amp_i),3));
+    avg_amp_rep = repmat(avg_amp_rep, 1, 1, 4, 1);
+    data_amp_norm_i = data_amp_i./avg_amp_rep;
     
     ad{ispl} = squeeze(data_amp_norm_d(:,:,1))/calib{ispl}(1);
     bd{ispl} = squeeze(data_amp_norm_d(:,:,2))/calib{ispl}(2);
@@ -141,11 +142,24 @@ for ispl=1:length(data_direct)
     
     xi{ispl} = -squeeze(data_xy_i(:,:,1)) - xy_splitter(1);
     yi{ispl} = -squeeze(data_xy_i(:,:,2)) - xy_splitter(2);
+    
+    sum_comp{ispl} = 1./avg_amp;
+end
+
+max_sum_comp = 0;
+for ispl=1:length(sum_comp)
+    max_sum_comp = max(max(sum_comp{ispl}),max_sum_comp);
+end
+max_sum_comp = max_sum_comp/(2^23-1);
+
+for ispl=1:length(sum_comp)
+    sum_comp{ispl} = round(sum_comp{ispl}./repmat(max_sum_comp, size(sum_comp{ispl},1), 1));
 end
 
 %%
 text_xd = {}; text_xi = {};
 text_yd = {}; text_yi = {};
+text_sumd = {}; text_sumi = {};
 ibpmmerge = 0;
 for ispl=1:length(xd)
     for iatt=1:size(xd{ispl},2)
@@ -163,6 +177,8 @@ for ispl=1:length(xd)
             text_xi{ibpm+ibpmmerge,iatt} = sprintf([name ':PosXOffset-SP' spacestr '    %10d    be'], round(xi{ispl}(ibpm,iatt)));
             text_yd{ibpm+ibpmmerge,iatt} = sprintf([name ':PosYOffset-SP' spacestr '    %10d    be'], round(yd{ispl}(ibpm,iatt)));
             text_yi{ibpm+ibpmmerge,iatt} = sprintf([name ':PosYOffset-SP' spacestr '    %10d    be'], round(yi{ispl}(ibpm,iatt)));
+            text_sumd{ibpm+ibpmmerge,iatt} = sprintf([name ':PosKsum-SP' spacestr '    %10d    be'], round(sum_comp{ispl}(ibpm,iatt)));
+            text_sumi{ibpm+ibpmmerge,iatt} = sprintf([name ':PosKsum-SP' spacestr '    %10d    be'], round(sum_comp{ispl}(ibpm,iatt)));
         end
     end
     ibpmmerge = size(text_yd,1);
@@ -172,20 +188,34 @@ end
 dirname = datestr(now, 'YYYY-mm-DD_HH-MM-SS');
 mkdir(dirname);
 for iatt=1:size(text_xd,2)
-    text_d = [sort(text_xd(:,iatt)); sort(text_yd(:,iatt))];
-    text_i = [sort(text_xi(:,iatt)); sort(text_yi(:,iatt))];
+    text_xy_d = [sort(text_xd(:,iatt)); sort(text_yd(:,iatt))];
+    text_xy_i = [sort(text_xi(:,iatt)); sort(text_yi(:,iatt))];
+    text_sum_d = sort(text_sumd(:,iatt));
+    text_sum_i = sort(text_sumi(:,iatt));
     
     att = rr{ispl}(1).rffe_att(iatt);
-    fid_d = fopen(sprintf('%s/posoffset_swdirect_att%ddB.txt', dirname, att), 'w+');
-    fid_i = fopen(sprintf('%s/posoffset_swinverted_att%ddB.txt', dirname, att), 'w+');
-    for ibpm=1:size(text_d,1)
+    fid_xy_d = fopen(sprintf('%s/posoffset_swdirect_att%ddB.txt', dirname, att), 'w+');
+    fid_xy_i = fopen(sprintf('%s/posoffset_swinverted_att%ddB.txt', dirname, att), 'w+');
+    fid_sum_d = fopen(sprintf('%s/posksum_swdirect_att%ddB.txt', dirname, att), 'w+');
+    fid_sum_i = fopen(sprintf('%s/posksum_swinverted_att%ddB.txt', dirname, att), 'w+');
+    for ibpm=1:size(text_xy_d,1)
         if ibpm>1
-            fprintf(fid_d, '\n');
-            fprintf(fid_i, '\n');
+            fprintf(fid_xy_d, '\n');
+            fprintf(fid_xy_i, '\n');
         end
-        fprintf(fid_d, text_d{ibpm});
-        fprintf(fid_i, text_i{ibpm});
+        fprintf(fid_xy_d, text_xy_d{ibpm});
+        fprintf(fid_xy_i, text_xy_i{ibpm});
     end
-    fclose(fid_d);
-    fclose(fid_i);
+    for ibpm=1:size(text_sum_d,1)
+        if ibpm>1
+            fprintf(fid_sum_d, '\n');
+            fprintf(fid_sum_i, '\n');
+        end
+        fprintf(fid_sum_d, text_sum_d{ibpm});
+        fprintf(fid_sum_i, text_sum_i{ibpm});
+    end
+    fclose(fid_xy_d);
+    fclose(fid_xy_i);
+    fclose(fid_sum_d);
+    fclose(fid_sum_i);
 end

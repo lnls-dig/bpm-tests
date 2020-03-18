@@ -32,6 +32,10 @@ end
 
 npvs = length(handles.val);
 
+if size(wvfdata,2) == 1
+    wvfdata = repmat(wvfdata, 1, npvs);
+end
+
 valid = handles.val ~= 0;
 
 wvfdata = wvfdata(:,valid);

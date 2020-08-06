@@ -12,6 +12,7 @@ end
 
 names.tim = bpms(strcmp(bpmtypes, 'tim'));
 names.rfbpms.sr = bpms(strcmp(bpmtypes, 'rfbpm-sr'));
+names.rfbpms.id = bpms(strcmp(bpmtypes, 'rfbpm-id'));
 names.rfbpms.boo = bpms(strcmp(bpmtypes, 'rfbpm-boo'));
 names.rfbpms.sp = bpms(strcmp(bpmtypes, 'rfbpm-sp'));
 names.pbpms = bpms(strcmp(bpmtypes, 'pbpm'));
